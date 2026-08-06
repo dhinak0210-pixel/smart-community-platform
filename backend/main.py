@@ -9,7 +9,15 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.config import settings
 from backend.database import check_db_connection, init_db, DATABASE_URL, _mask_database_url
-from backend.routes import auth_router, users_router, issues_router, dashboard_router
+from backend.routes import (
+    auth_router,
+    users_router,
+    issues_router,
+    dashboard_router,
+    volunteers_router,
+    notifications_router,
+    agents_router,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +69,9 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
 app.include_router(issues_router, prefix="/api/v1")
 app.include_router(dashboard_router, prefix="/api/v1")
+app.include_router(volunteers_router, prefix="/api/v1")
+app.include_router(notifications_router, prefix="/api/v1")
+app.include_router(agents_router, prefix="/api/v1")
 
 
 @app.get("/", tags=["Health Check"])
