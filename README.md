@@ -1,155 +1,121 @@
 # Smart Community Platform 🏙️
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon.tech-4169E1?style=flat-square&logo=postgresql)](https://neon.tech)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-
-A civic-tech platform connecting citizens with local authorities to report, track, and resolve community issues intelligently.
+A modern, full-stack civic-tech platform connecting citizens with local authorities to report, track, and resolve community infrastructure issues intelligently.
 
 ---
 
-## 🚀 Project Overview
+## 🌟 Key Features
 
-The **Smart Community Platform** empowers residents to report infrastructure and safety issues (e.g., potholes, broken streetlights, illegal dumping) with precise geolocation and photos. Local authorities gain a centralized dashboard to track, assign, and resolve reported issues efficiently.
-
-### Key Features
-- 📍 **Interactive Issue Mapping**: Real-time Leaflet map visualization of community reports.
-- 📸 **Photo & Media Support**: File uploads with Cloudinary cloud storage integration.
-- 👤 **Role-Based Access Control**: Separate workflows for Citizens, Volunteers, and Authorities.
-- 📊 **Analytics Dashboard**: Chart.js data visualizations for resolution metrics.
-- 🤖 **AI-Powered Workflows (Phase 2 & 3)**: Auto-categorization using Transformers & YOLOv8 image analysis.
-
----
-
-## 🛠️ Tech Stack
-
-| Domain | Technologies |
-| :--- | :--- |
-| **Backend Framework** | FastAPI (Python 3.11+), Uvicorn |
-| **Database & ORM** | PostgreSQL (Neon.tech), SQLAlchemy 2.0, Alembic |
-| **Security & Auth** | Passlib (bcrypt), PyJWT (python-jose), OAuth2 Password Bearer |
-| **Frontend** | HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3 |
-| **Mapping & Charts** | Leaflet.js 1.9.4, Chart.js |
-| **AI / ML (Planned)** | Hugging Face Transformers, Ultralytics YOLOv8, CrewAI, Groq API |
-| **Hosting & DevOps** | Git, GitHub, Railway.app, Cloudinary |
+- 📍 **Interactive Live Map**: Real-time Leaflet.js dark map displaying reported community hazards with status badges.
+- 🤖 **AI Issue Auto-Categorization**: Natural Language Processing (NLP) categorizer classifying issue reports (`Pothole`, `Street Light`, `Water Supply`, `Waste Management`, `Traffic Signal`, `Park Maintenance`).
+- 🤖 **Multi-Agent Workflow Engine**:
+  - `ReporterAgent`: Automated severity and urgency scoring.
+  - `ResolverAgent`: Municipal action plan generation.
+  - `AnalystAgent`: Executive civic health reporting.
+  - `CommunityAgent`: Volunteer skill matching.
+- 📊 **Civic Analytics Dashboard**: Chart.js visual insights on resolution rates, category distributions, and active dispatches.
+- 📸 **Media Upload Handling**: Validated image uploads with Cloudinary integration and local filesystem fallback.
+- 🔐 **JWT Authentication & RBAC**: Password hashing using bcrypt with Role-Based Access Control (`citizen`, `volunteer`, `authority`, `admin`).
+- ⚡ **Production-Ready Stack**: FastAPI, SQLAlchemy 2.0, Alembic migrations, Pydantic V2 schemas, and 100% passing Pytest test suite.
 
 ---
 
-## 📂 Project Structure
+## 🛠️ Technology Stack
 
-```text
-smart-community/
-├── backend/
-│   ├── main.py                  # FastAPI app entry point
-│   ├── database.py              # DB connection engine and session pool
-│   ├── config.py                # Pydantic environment configuration
-│   ├── models/                  # SQLAlchemy ORM models (User, Issue, Vote, Comment)
-│   ├── schemas/                 # Pydantic data validation schemas
-│   ├── routes/                  # API routers (auth, issues, users, dashboard)
-│   ├── utils/                   # Utilities (auth helpers, Cloudinary uploads, mailers)
-│   ├── agents/                  # AI CrewAI Agent workflows (Phase 3)
-│   └── ml/                      # Machine Learning models & categorizers (Phase 2)
-├── frontend/
-│   ├── index.html               # Main map & issue reporting page
-│   ├── dashboard.html           # Authority analytics dashboard
-│   ├── issue.html               # Single issue detailed view
-│   ├── profile.html             # User profile management
-│   ├── css/                     # Application styling & component themes
-│   └── js/                      # Leaflet map, Auth, API, & Chart modules
-├── tests/                       # Pytest test suite (auth, issues endpoints)
-├── uploads/                     # Local fallback media storage
-├── .env.example                 # Environment configuration template
-├── .gitignore                   # Version control ignore rules
-├── setup.sh                     # Automated environment setup script
-├── requirements.txt             # Python dependencies with version pins
-└── README.md                    # Project documentation
-```
+| Component | Technology |
+|---|---|
+| **Backend Framework** | FastAPI (Python 3.12) |
+| **ORM & Database** | SQLAlchemy 2.0 + PostgreSQL / SQLite |
+| **Database Migrations** | Alembic |
+| **Authentication** | Passlib (Bcrypt) + Python-Jose (JWT) |
+| **Frontend UI** | Vanilla JS, Leaflet.js, Bootstrap 5.3, Chart.js |
+| **Image Storage** | Cloudinary API + Pillow fallback |
+| **Testing** | Pytest + Starlette TestClient |
 
 ---
 
-## ⚡ Quick Start Guide
+## 🚀 Quick Start Guide
 
-### Prerequisites
-- **Python 3.11+**
-- **Git**
-- **PostgreSQL** (Local instance or free [Neon.tech](https://neon.tech) database)
+### 1. Prerequisites
+- Python 3.10+
+- Virtualenv
 
-### 1. Clone & Initialize Environment
-Run the automated setup script to set up virtual environment and dependencies:
-
+### 2. Environment Setup
 ```bash
-git clone https://github.com/your-username/smart-community.git
-cd smart-community
+# Clone repository and enter directory
+cd dashbord
+
+# Run automated setup script
 bash setup.sh
-```
 
-### 2. Configure Environment Secrets
-Copy the environment template and update your credentials:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env`:
-```ini
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/smart_community"
-SECRET_KEY="your_custom_secret_key_here"
-```
-
-### 3. Run Development Server
-Activate your virtual environment and launch Uvicorn:
-
-```bash
+# Activate virtual environment
 source venv/bin/activate
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Access the interactive API documentation at `http://localhost:8000/docs`.
+### 3. Environment Variables (`.env`)
+Create or edit `.env` in the project root:
+```env
+APP_NAME="Smart Community Platform"
+SECRET_KEY="supersecretjwtkeychangeinproduction"
+DATABASE_URL="sqlite:///./smart_community.db"
+PORT=8001
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
+```
+
+### 4. Running Database Migrations
+```bash
+PYTHONPATH=. venv/bin/alembic upgrade head
+```
+
+### 5. Starting Development Server
+```bash
+venv/bin/uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload
+```
+
+Access application:
+- 🌐 **Web UI**: [http://localhost:8001/static/index.html](http://localhost:8001/static/index.html)
+- 📊 **Analytics Dashboard**: [http://localhost:8001/static/dashboard.html](http://localhost:8001/static/dashboard.html)
+- 📚 **Swagger API Docs**: [http://localhost:8001/docs](http://localhost:8001/docs)
 
 ---
 
-## 🔑 Environment Variables
+## 🧪 Running Automated Tests
 
-| Variable | Description | Default / Required |
-| :--- | :--- | :--- |
-| `DATABASE_URL` | PostgreSQL connection URL | **Required** |
-| `SECRET_KEY` | JWT signing secret key | **Required** |
-| `ALGORITHM` | JWT hashing algorithm (`HS256`) | `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | JWT expiration time | `60` |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary storage cloud name | Optional |
-| `CLOUDINARY_API_KEY` | Cloudinary API Key | Optional |
-| `CLOUDINARY_API_SECRET` | Cloudinary API Secret | Optional |
-| `GROQ_API_KEY` | Groq API Key for LLM services | Optional |
+```bash
+PYTHONPATH=. venv/bin/pytest tests/
+```
 
 ---
 
-## 🌐 Key API Endpoints Overview
+## 📁 Repository Structure
 
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :---: |
-| `POST` | `/api/v1/auth/register` | Register a new user | ❌ |
-| `POST` | `/api/v1/auth/login` | Login and obtain JWT access token | ❌ |
-| `GET` | `/api/v1/users/me` | Fetch authenticated user profile | ✅ |
-| `GET` | `/api/v1/issues/` | List all reported issues with filters | ❌ |
-| `POST` | `/api/v1/issues/` | Create a new community issue report | ✅ |
-| `GET` | `/api/v1/issues/{id}` | Retrieve issue details | ❌ |
-| `PUT` | `/api/v1/issues/{id}` | Update issue status (Authorities) | ✅ |
-| `GET` | `/api/v1/dashboard/stats` | Fetch community statistics & chart metrics | ✅ |
+```
+├── backend/
+│   ├── main.py             # FastAPI App Entrypoint & Lifespan
+│   ├── config.py           # Centralized Pydantic Settings
+│   ├── database.py         # SQLAlchemy Engine & Session Provider
+│   ├── models/             # ORM Models (User, Issue, Vote, Comment, VolunteerTask, Notification)
+│   ├── schemas/            # Pydantic v2 Schemas (User, Issue, Common)
+│   ├── routes/             # API Endpoints (auth, users, issues, dashboard)
+│   ├── utils/              # Security, Image Upload & Email Helpers
+│   ├── ml/                 # NLP Categorizer & Image Analyzer
+│   └── agents/             # AI Multi-Agent Workflows
+├── frontend/
+│   ├── index.html          # Main Map UI & Reporting Modals
+│   ├── dashboard.html      # Analytics & KPI Dashboard
+│   ├── issue.html          # Issue Detail Page
+│   ├── profile.html        # User Profile Page
+│   ├── css/                # Glassmorphic Stylesheets
+│   └── js/                 # Leaflet Map, Auth & Feed Modules
+├── tests/                  # Pytest Unit & Integration Tests
+├── alembic.ini             # Migration Configuration
+├── requirements.txt        # Python Dependencies
+└── setup.sh                # Setup Script
+```
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-1. Fork the project repository.
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
-
----
-
-## 📜 License
-
+## 📄 License
 Distributed under the MIT License. See `LICENSE` for details.

@@ -95,13 +95,19 @@
             </div>
             <div class="row g-2 mb-3">
               <div class="col-md-6">
-                <label class="form-label">Category</label>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label mb-0">Category</label>
+                  <button type="button" class="btn btn-link text-info p-0 small text-decoration-none" id="btnAutoCategory">
+                    <i class="bi bi-magic me-1"></i>AI Auto
+                  </button>
+                </div>
                 <select id="issueCategory" class="form-select bg-dark text-white">
                   <option value="pothole">Pothole</option>
                   <option value="street_light">Street Light</option>
                   <option value="water_supply">Water Supply</option>
                   <option value="waste_management">Waste Management</option>
                   <option value="traffic_signal">Traffic Signal</option>
+                  <option value="park_maintenance">Park Maintenance</option>
                   <option value="other">Other</option>
                 </select>
               </div>

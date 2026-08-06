@@ -53,6 +53,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // AI Auto-Categorize Button
+  const btnAutoCategory = document.getElementById('btnAutoCategory');
+  if (btnAutoCategory) {
+    btnAutoCategory.addEventListener('click', async () => {
+      const title = document.getElementById('issueTitle').value;
+      const description = document.getElementById('issueDescription').value;
+      if (!title && !description) {
+        alert('Please enter a title or description first.');
+        return;
+      }
+      try {
+        const res = await fetch(`${CONFIG.API_BASE_URL}/issues/auto-categorize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description }),
+        });
+        const data = await res.json();
+        if (data.predicted_category) {
+          const categorySelect = document.getElementById('issueCategory');
+          if (categorySelect) categorySelect.value = data.predicted_category;
+        }
+      } catch (err) {
+        console.error('AI Auto-categorization failed:', err);
+      }
+    });
+  }
+
   // Handle Login Form
   const formLogin = document.getElementById('formLogin');
   if (formLogin) {
