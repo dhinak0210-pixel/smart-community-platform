@@ -1,27 +1,35 @@
 """FastAPI Application Entry Point for Smart Community Platform."""
 
 import os
+import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from backend.config import settings
-from backend.database import engine, Base
+from backend.database import check_db_connection, init_db, DATABASE_URL, _mask_database_url
 from backend.routes import auth_router, users_router, issues_router, dashboard_router
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan context manager for startup and shutdown events."""
-    # Ensure database tables exist on startup if database is reachable
-    try:
-        Base.metadata.create_all(bind=engine)
-    except Exception as e:
-        print(f"Startup DB warning: Could not initialize database tables: {e}")
-    # Ensure uploads directory exists
+    logger.info("Initializing application startup sequence...")
+
+    # 1. Check database connectivity
+    if check_db_connection():
+        logger.info("Database connection verified successfully.")
+        init_db()
+    else:
+        logger.warning("Database connection failed on startup. Application operating in degraded mode.")
+
+    # 2. Ensure uploads directory exists
     os.makedirs("uploads", exist_ok=True)
     yield
+    logger.info("Application shutdown complete.")
 
 
 app = FastAPI(
@@ -56,11 +64,15 @@ app.include_router(dashboard_router, prefix="/api/v1")
 
 
 @app.get("/", tags=["Health Check"])
-def root_health_check():
-    """Health check endpoint returning API status."""
+@app.get("/health", tags=["Health Check"])
+def health_check():
+    """Health check endpoint returning API and database connection status."""
+    db_connected = check_db_connection()
     return {
-        "status": "healthy",
+        "status": "healthy" if db_connected else "degraded",
         "app": settings.APP_NAME,
         "environment": settings.APP_ENV,
+        "database": "connected" if db_connected else "disconnected",
+        "database_url": _mask_database_url(DATABASE_URL),
         "docs": "/docs",
     }
