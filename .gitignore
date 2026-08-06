@@ -1,0 +1,56 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Python & Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Database & Migrations
+*.sqlite3
+*.db
+
+# Temporary Uploads & Media
+uploads/*
+!uploads/.gitkeep
+
+# Machine Learning Models & Datasets
+*.pt
+*.pth
+*.bin
+*.onnx
+*.pkl
+*.h5
+*.safetensors
+backend/ml/weights/
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing & Code Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.mypy_cache/
