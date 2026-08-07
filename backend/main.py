@@ -169,10 +169,13 @@ if env_name == "production":
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=[
+            "*.onrender.com",
+            "*.hf.space",
             "*.railway.app",
             "*.vercel.app",
             "localhost",
             "127.0.0.1",
+            "*",
         ]
     )
 
