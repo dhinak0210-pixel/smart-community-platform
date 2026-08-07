@@ -7,7 +7,7 @@
 const CONFIG = {
   API_BASE_URL: (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") 
     ? window.location.origin 
-    : "http://localhost:8001",
+    : "http://localhost:8000",
   API_PREFIX: "/api",
 
   ACCESS_TOKEN_KEY: "sc_access_token",
