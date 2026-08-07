@@ -28,6 +28,11 @@ const Auth = {
     const stored = localStorage.getItem(configObj.USER_KEY);
     if (stored) { try { this.user = JSON.parse(stored); } catch (_) { this.user = null; } }
 
+    if (this.accessToken && this.user) {
+      this.isLoggedIn = true;
+      if (typeof updateNavbar === "function") updateNavbar();
+    }
+
     if (this.accessToken) {
       const api = _getAuthAPI();
       try {

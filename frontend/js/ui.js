@@ -348,12 +348,22 @@ function updateNavbar() {
   const navDashboardLink = document.getElementById("nav-dashboard-link");
   const navReportBtn = document.getElementById("nav-report-btn");
 
-  if (navLoggedOut) navLoggedOut.style.display = logged ? "none" : "flex";
-  if (navLoggedIn) navLoggedIn.style.display = logged ? "flex" : "none";
+  if (navLoggedOut) {
+    navLoggedOut.classList.toggle("d-none", !!logged);
+    navLoggedOut.style.display = logged ? "none" : "flex";
+  }
+  if (navLoggedIn) {
+    navLoggedIn.classList.toggle("d-none", !logged);
+    navLoggedIn.style.display = logged ? "flex" : "none";
+  }
   if (navUserName && user) navUserName.textContent = user.name || "User";
   if (navUserAvatar && user) navUserAvatar.innerHTML = renderUserAvatar(user, 32);
   if (navDashboardLink) {
-    navDashboardLink.style.display = (user && (user.role === "authority" || user.role === "admin")) ? "block" : "none";
+    navDashboardLink.classList.remove("d-none");
+    navDashboardLink.style.display = (user && (user.role === "authority" || user.role === "admin")) ? "inline-flex" : "none";
   }
-  if (navReportBtn) navReportBtn.style.display = logged ? "inline-block" : "none";
+  if (navReportBtn) {
+    navReportBtn.classList.remove("d-none");
+    navReportBtn.style.display = logged ? "inline-flex" : "none";
+  }
 }
