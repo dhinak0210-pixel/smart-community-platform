@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login, Register, or Reset your password - Smart Community Platform.">
+  <title>Login - Smart Community Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/components.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container-fluid p-0">
+    <div class="row g-0 min-vh-100">
+      <!-- LEFT: Brand panel -->
+      <div class="col-lg-5 d-none d-lg-flex auth-brand-panel">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-houses-fill" style="font-size:2rem"></i>
+            <h1 class="mb-0">Smart Community</h1>
+          </div>
+          <p class="mb-4" style="font-size:1.25rem;font-weight:300">Report. Track. Resolve.</p>
+          <div class="mt-5">
+            <div class="feature-item"><i class="bi bi-geo-alt-fill"></i><span>Report issues with exact location on the map</span></div>
+            <div class="feature-item"><i class="bi bi-map-fill"></i><span>See all community problems on a live map</span></div>
+            <div class="feature-item"><i class="bi bi-check-circle-fill"></i><span>Track resolution progress in real time</span></div>
+            <div class="feature-item"><i class="bi bi-people-fill"></i><span>Connect citizens with local authorities</span></div>
+            <div class="feature-item"><i class="bi bi-bar-chart-fill"></i><span>Analytics dashboard for decision makers</span></div>
+          </div>
+          <div class="mt-5 pt-4" style="opacity:0.7">
+            <p class="small mb-0">&copy; 2024 Smart Community Platform. Making cities better, together.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Auth forms -->
+      <div class="col-lg-7 auth-form-panel">
+        <div class="auth-form-box">
+          <!-- Mobile logo -->
+          <div class="d-lg-none text-center mb-4">
+            <i class="bi bi-houses-fill" style="font-size:2.5rem;color:var(--color-primary)"></i>
+            <h3 class="mt-2" style="color:var(--color-primary)">Smart Community</h3>
+          </div>
+
+          <!-- Success message area -->
+          <div id="auth-success" style="display:none"></div>
+
+          <!-- Form area -->
+          <div id="auth-forms">
+            <!-- Tab navigation -->
+            <ul class="nav nav-tabs mb-4" id="auth-tabs">
+              <li class="nav-item"><a class="nav-link active" href="#" data-tab="login" onclick="switchAuthTab('login', event)">Login</a></li>
+              <li class="nav-item"><a class="nav-link" href="#" data-tab="register" onclick="switchAuthTab('register', event)">Register</a></li>
+            </ul>
+
+            <!-- LOGIN FORM -->
+            <div id="tab-login">
+              <h4 class="mb-1">Welcome back</h4>
+              <p class="text-muted mb-4">Sign in to your account to continue.</p>
+              <form onsubmit="handleLoginForm(event)">
+                <div class="mb-3">
+                  <label for="login-email" class="form-label">Email</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control" id="login-email" placeholder="you@example.com" required autofocus>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="login-password" class="form-label">Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="login-password" placeholder="Enter your password" required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('login-password', this)"><i class="bi bi-eye"></i></button>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="login-remember">
+                    <label class="form-check-label small" for="login-remember">Remember me</label>
+                  </div>
+                  <a href="#" class="small" onclick="switchAuthTab('forgot', event)">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-box-arrow-in-right me-2"></i>Sign In</button>
+              </form>
+              <p class="text-center text-muted mt-4 small">Don't have an account? <a href="#" onclick="switchAuthTab('register', event)">Create one</a></p>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div id="tab-register" style="display:none">
+              <h4 class="mb-1">Create account</h4>
+              <p class="text-muted mb-4">Join your community and start making a difference.</p>
+              <form onsubmit="handleRegisterForm(event)">
+                <div class="mb-3">
+                  <label for="reg-name" class="form-label">Full Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" class="form-control" id="reg-name" placeholder="Your full name" minlength="2" required>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="reg-email" class="form-label">Email</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control" id="reg-email" placeholder="you@example.com" required>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="reg-role" class="form-label">Role</label>
+                  <select class="form-select" id="reg-role">
+                    <option value="citizen" selected>Citizen</option>
+                    <option value="volunteer">Volunteer</option>
+                    <option value="authority">Authority (requires approval)</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="reg-password" class="form-label">Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="reg-password" placeholder="Create a strong password" required oninput="renderPasswordStrength(document.getElementById('pw-strength'), this.value)">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('reg-password', this)"><i class="bi bi-eye"></i></button>
+                  </div>
+                  <div id="pw-strength" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="reg-confirm" class="form-label">Confirm Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="reg-confirm" placeholder="Confirm your password" required>
+                  </div>
+                </div>
+                <div class="form-check mb-4">
+                  <input class="form-check-input" type="checkbox" id="reg-terms" required>
+                  <label class="form-check-label small" for="reg-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-person-plus me-2"></i>Create Account</button>
+              </form>
+              <p class="text-center text-muted mt-4 small">Already have an account? <a href="#" onclick="switchAuthTab('login', event)">Sign in</a></p>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div id="tab-forgot" style="display:none">
+              <h4 class="mb-1">Forgot password?</h4>
+              <p class="text-muted mb-4">Enter your email and we'll send you a reset link.</p>
+              <form onsubmit="handleForgotPasswordForm(event)">
+                <div class="mb-3">
+                  <label for="forgot-email" class="form-label">Email</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input type="email" class="form-control" id="forgot-email" placeholder="you@example.com" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-send me-2"></i>Send Reset Link</button>
+              </form>
+              <p class="text-center text-muted mt-4 small"><a href="#" onclick="switchAuthTab('login', event)"><i class="bi bi-arrow-left me-1"></i>Back to login</a></p>
+            </div>
+
+            <!-- RESET PASSWORD (shown when ?token= is present) -->
+            <div id="tab-reset" style="display:none">
+              <h4 class="mb-1">Reset password</h4>
+              <p class="text-muted mb-4">Enter your new password below.</p>
+              <form onsubmit="handleResetPasswordForm(event)">
+                <div class="mb-3">
+                  <label for="reset-password" class="form-label">New Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="reset-password" placeholder="New password" required oninput="renderPasswordStrength(document.getElementById('reset-pw-strength'), this.value)">
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('reset-password', this)"><i class="bi bi-eye"></i></button>
+                  </div>
+                  <div id="reset-pw-strength" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                  <label for="reset-confirm" class="form-label">Confirm Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" class="form-control" id="reset-confirm" placeholder="Confirm new password" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-check-lg me-2"></i>Reset Password</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    function switchAuthTab(tab, e) {
+      if (e) e.preventDefault();
+      ["login", "register", "forgot", "reset"].forEach(t => {
+        const el = document.getElementById("tab-" + t);
+        if (el) el.style.display = t === tab ? "block" : "none";
+      });
+      document.querySelectorAll("#auth-tabs .nav-link").forEach(a => {
+        a.classList.toggle("active", a.dataset.tab === tab);
+      });
+      document.getElementById("auth-success").style.display = "none";
+      document.getElementById("auth-forms").style.display = "block";
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector("i");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.className = "bi bi-eye-slash";
+      } else {
+        input.type = "password";
+        icon.className = "bi bi-eye";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("token")) {
+        switchAuthTab("reset");
+      } else if (params.get("tab") === "register") {
+        switchAuthTab("register");
+      }
+
+      /* If already logged in, redirect */
+      setTimeout(() => {
+        if (Auth.isLoggedIn && !params.get("token")) {
+          window.location.href = "index.html";
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>

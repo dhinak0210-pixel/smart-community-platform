@@ -8,23 +8,29 @@ logger = logging.getLogger(__name__)
 
 # Category keyword rules mapping
 CATEGORY_KEYWORDS = {
-    IssueCategory.POTHOLE: [
-        r"\bpothole\b", r"\broad\b", r"\basphalt\b", r"\bcrater\b", r"\btarmac\b", r"\bcrack\b", r"\bstreet damage\b", r"\bhole\b"
+    IssueCategory.INFRASTRUCTURE: [
+        r"\bpothole\b", r"\broad\b", r"\basphalt\b", r"\bcrater\b", r"\btarmac\b", r"\bcrack\b", r"\bstreet damage\b", r"\bhole\b", r"\bbridge\b", r"\bbuilding\b"
     ],
-    IssueCategory.STREET_LIGHT: [
-        r"\bstreet\s*light\b", r"\blamp\b", r"\blight\b", r"\bdarkness\b", r"\bbulb\b", r"\bflicker\b", r"\bpole\b"
+    IssueCategory.UTILITIES: [
+        r"\bstreet\s*light\b", r"\blamp\b", r"\blight\b", r"\bdarkness\b", r"\bbulb\b", r"\bflicker\b", r"\bpole\b", r"\bpower\b", r"\belectricity\b", r"\binternet\b"
     ],
-    IssueCategory.WATER_SUPPLY: [
+    IssueCategory.FLOODING: [
         r"\bwater\b", r"\bpipe\b", r"\bleak\b", r"\bsewage\b", r"\bdrain\b", r"\boverflow\b", r"\bflooding\b", r"\btap\b"
     ],
-    IssueCategory.WASTE_MANAGEMENT: [
-        r"\bgarbage\b", r"\btrash\b", r"\bwaste\b", r"\bdump\b", r"\blitter\b", r"\bbin\b", r"\brefuse\b", r"\bodor\b"
+    IssueCategory.WASTE: [
+        r"\bgarbage\b", r"\btrash\b", r"\bwaste\b", r"\bdump\b", r"\blitter\b", r"\bbin\b", r"\brefuse\b", r"\bodor\b", r"\brecycling\b"
     ],
-    IssueCategory.TRAFFIC_SIGNAL: [
-        r"\btraffic\b", r"\bsignal\b", r"\bred light\b", r"\bstoplight\b", r"\bintersection\b", r"\bcongestion\b"
+    IssueCategory.TRAFFIC: [
+        r"\btraffic\b", r"\bsignal\b", r"\bred light\b", r"\bstoplight\b", r"\bintersection\b", r"\bcongestion\b", r"\bsign\b", r"\baccident\b"
     ],
-    IssueCategory.PARK_MAINTENANCE: [
-        r"\bpark\b", r"\btree\b", r"\bbench\b", r"\bplayground\b", r"\bgrass\b", r"\bgarden\b", r"\bweed\b"
+    IssueCategory.ENVIRONMENT: [
+        r"\bpark\b", r"\btree\b", r"\bbench\b", r"\bplayground\b", r"\bgrass\b", r"\bgarden\b", r"\bweed\b", r"\bpollution\b"
+    ],
+    IssueCategory.SAFETY: [
+        r"\bcrime\b", r"\bdanger\b", r"\bdangerous\b", r"\bfire\b", r"\bhazard\b", r"\bunsafe\b"
+    ],
+    IssueCategory.NOISE: [
+        r"\bnoise\b", r"\bloud\b", r"\bparty\b", r"\bconstruction\b", r"\banimal\b", r"\bbarking\b"
     ],
 }
 

@@ -7,6 +7,7 @@ from backend.routes.dashboard import router as dashboard_router
 from backend.routes.volunteers import router as volunteers_router
 from backend.routes.notifications import router as notifications_router
 from backend.routes.agents import router as agents_router
+from backend.routes.upload import router as upload_router
 
 __all__ = [
     "auth_router",
@@ -16,4 +17,5 @@ __all__ = [
     "volunteers_router",
     "notifications_router",
     "agents_router",
+    "upload_router",
 ]

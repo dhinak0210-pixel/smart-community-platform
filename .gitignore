@@ -1,56 +1,126 @@
-# Environment & Secrets
+# ═══════════════════════════════
+# SECURITY - NEVER COMMIT THESE
+# ═══════════════════════════════
 .env
 .env.local
-.env.*.local
+.env.production
+.env.staging
+*.key
+*.pem
+*.cert
 
-# Python & Virtual Environments
-venv/
-env/
-ENV/
-.venv/
+# ═══════════════════════════════
+# PYTHON
+# ═══════════════════════════════
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Database & Migrations
-*.sqlite3
-*.db
+# ═══════════════════════════════
+# VIRTUAL ENVIRONMENT
+# ═══════════════════════════════
+venv/
+env/
+ENV/
+.venv/
+.env/
+virtualenv/
 
-# Temporary Uploads & Media
-uploads/*
-!uploads/.gitkeep
-
-# Machine Learning Models & Datasets
+# ═══════════════════════════════
+# ML MODELS (large files)
+# ═══════════════════════════════
+ml_models/
 *.pt
-*.pth
-*.bin
-*.onnx
 *.pkl
 *.h5
+*.ckpt
+*.bin
 *.safetensors
-backend/ml/weights/
+chroma_db/
 
-# IDE & Editor Settings
-.vscode/
-.idea/
-*.swp
-*.swo
-*.sublime-project
-*.sublime-workspace
+# ═══════════════════════════════
+# UPLOADS (user content)
+# ═══════════════════════════════
+uploads/
+temp_uploads/
 
-# Operating System Files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# ═══════════════════════════════
+# DATABASE FILES
+# ═══════════════════════════════
+*.sqlite
+*.sqlite3
+*.db
+test_db.sqlite
 
-# Testing & Code Coverage
+# ═══════════════════════════════
+# TESTING
+# ═══════════════════════════════
+.pytest_cache/
 .coverage
 htmlcov/
-.pytest_cache/
 .tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+nosetests.xml
+pytest.xml
+
+# ═══════════════════════════════
+# IDE AND EDITORS
+# ═══════════════════════════════
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ═══════════════════════════════
+# LOGS
+# ═══════════════════════════════
+*.log
+logs/
+*.log.*
+
+# ═══════════════════════════════
+# ALEMBIC (keep migrations, not cache)
+# ═══════════════════════════════
+alembic/__pycache__/
+
+# ═══════════════════════════════
+# NODE (frontend build tools if added later)
+# ═══════════════════════════════
+node_modules/
+.npm
+npm-debug.log
+
+# ═══════════════════════════════
+# MISC
+# ═══════════════════════════════
 .mypy_cache/
+.dmypy.json
+dmypy.json
+*.bak
+*.tmp
+*.orig

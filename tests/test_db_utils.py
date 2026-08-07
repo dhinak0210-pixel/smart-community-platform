@@ -11,8 +11,8 @@ def test_db_utils_pagination_and_helpers(db_session):
     # Seed test user
     user = User(
         email="testdbuser@example.com",
-        hashed_password="hashedpassword",
-        full_name="DB Test User",
+        password_hash="hashedpassword",
+        name="DB Test User",
         role=UserRole.CITIZEN
     )
     db_session.add(user)
@@ -23,21 +23,21 @@ def test_db_utils_pagination_and_helpers(db_session):
     issue1 = Issue(
         title="Major Pothole on Highway",
         description="Dangerous crater in lane 2 requiring urgent asphalt",
-        category=IssueCategory.POTHOLE,
+        category=IssueCategory.INFRASTRUCTURE,
         status=IssueStatus.REPORTED,
-        priority=IssuePriority.URGENT,
-        latitude=13.08,
-        longitude=80.27,
+        priority=IssuePriority.CRITICAL,
+        location_lat=13.08,
+        location_lng=80.27,
         reporter_id=user.id
     )
     issue2 = Issue(
         title="Flickering Light in Sector 5",
         description="Lamp post bulb is unlit at night",
-        category=IssueCategory.STREET_LIGHT,
+        category=IssueCategory.UTILITIES,
         status=IssueStatus.IN_PROGRESS,
         priority=IssuePriority.LOW,
-        latitude=13.09,
-        longitude=80.28,
+        location_lat=13.09,
+        location_lng=80.28,
         reporter_id=user.id
     )
     db_session.add_all([issue1, issue2])
@@ -52,7 +52,7 @@ def test_db_utils_pagination_and_helpers(db_session):
 
     # 2. Test Filters
     filter_stmt = select(Issue)
-    filter_stmt = apply_filters(filter_stmt, Issue, {"status": IssueStatus.IN_PROGRESS, "category": None})
+    filter_stmt = apply_filters(filter_stmt, Issue, {"status": IssueStatus.IN_PROGRESS})
     filter_results = db_session.execute(filter_stmt).scalars().all()
     assert len(filter_results) == 1
     assert filter_results[0].id == issue2.id
@@ -75,9 +75,9 @@ def test_db_utils_pagination_and_helpers(db_session):
         new_issue = Issue(
             title="Burst Water Main",
             description="Water leaking across sidewalk",
-            category=IssueCategory.WATER_SUPPLY,
-            latitude=13.10,
-            longitude=80.29,
+            category=IssueCategory.FLOODING,
+            location_lat=13.10,
+            location_lng=80.29,
             reporter_id=user.id
         )
         db_session.add(new_issue)

@@ -64,15 +64,22 @@ def _mask_database_url(url: str) -> str:
 # 3. SQLAlchemy Engine Initialization & Connection Pooling
 # ------------------------------------------------------------------------------
 try:
-    engine = create_engine(
-        DATABASE_URL,
-        pool_size=5,
-        max_overflow=10,
-        pool_timeout=30,
-        pool_recycle=1800,
-        pool_pre_ping=True,
-        echo=settings.DEBUG,
-    )
+    if DATABASE_URL.startswith("sqlite"):
+        engine_kwargs = {
+            "connect_args": {"check_same_thread": False},
+            "pool_pre_ping": True,
+            "echo": settings.DEBUG,
+        }
+    else:
+        engine_kwargs = {
+            "pool_size": 5,
+            "max_overflow": 10,
+            "pool_timeout": 30,
+            "pool_recycle": 1800,
+            "pool_pre_ping": True,
+            "echo": settings.DEBUG,
+        }
+    engine = create_engine(DATABASE_URL, **engine_kwargs)
     logger.info(f"Database engine created successfully for {_mask_database_url(DATABASE_URL)}")
 except Exception as e:
     logger.critical(f"Failed to initialize database engine: {e}", exc_info=True)

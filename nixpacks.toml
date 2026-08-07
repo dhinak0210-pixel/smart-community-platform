@@ -1,0 +1,29 @@
+[phases.setup]
+nixPkgs = [
+  "python311",
+  "libpq",
+  "gcc",
+  "postgresql",
+  "libffi",
+  "openssl"
+]
+
+[phases.install]
+cmds = [
+  "pip install --upgrade pip",
+  "pip install -r requirements.txt"
+]
+
+[phases.build]
+cmds = [
+  "python scripts/download_models.py",
+  "echo 'ML models downloaded successfully'"
+]
+
+[start]
+cmd = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 1 --log-level info"
+
+[variables]
+PYTHONUNBUFFERED = "1"
+PYTHONDONTWRITEBYTECODE = "1"
+PIP_NO_CACHE_DIR = "1"

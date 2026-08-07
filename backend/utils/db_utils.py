@@ -147,7 +147,9 @@ def apply_filters(
             if hasattr(model, field_name):
                 query = query.where(getattr(model, field_name) <= value)
         elif hasattr(model, key):
-            query = query.where(getattr(model, key) == value)
+            field_attr = getattr(model, key)
+            val_cmp = value.value if hasattr(value, "value") else value
+            query = query.where(field_attr == val_cmp)
 
     return query
 

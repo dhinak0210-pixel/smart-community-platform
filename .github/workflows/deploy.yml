@@ -1,0 +1,278 @@
+name: Smart Community Platform CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # ───────────────────────────────────────
+  # JOB 1: TEST (runs on push and PR)
+  # ───────────────────────────────────────
+  test:
+    name: Run Test Suite
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx pytest-cov
+          pip install factory-boy faker freezegun pytest-mock
+
+      - name: Run linting
+        run: |
+          pip install flake8
+          flake8 backend/ --max-line-length=100 --ignore=E501,W503 || true
+
+      - name: Run unit tests
+        env:
+          PYTHONPATH: .
+          DATABASE_URL: sqlite:///./test.sqlite
+          SECRET_KEY: test-secret-key-for-ci-minimum-32-chars
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          GROQ_API_KEY: test
+          EMAIL_USER: test@test.com
+          EMAIL_PASSWORD: test
+          FRONTEND_URL: http://localhost:3000
+          DEBUG: "true"
+          APP_ENV: testing
+        run: |
+          pytest backend/tests/unit/ -v --tb=short
+
+      - name: Run integration tests
+        env:
+          PYTHONPATH: .
+          DATABASE_URL: sqlite:///./test.sqlite
+          SECRET_KEY: test-secret-key-for-ci-minimum-32-chars
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          GROQ_API_KEY: test
+          EMAIL_USER: test@test.com
+          EMAIL_PASSWORD: test
+          FRONTEND_URL: http://localhost:3000
+          DEBUG: "true"
+          APP_ENV: testing
+        run: |
+          pytest backend/tests/integration/ -v --tb=short
+
+      - name: Run agent tests
+        env:
+          PYTHONPATH: .
+          DATABASE_URL: sqlite:///./test.sqlite
+          SECRET_KEY: test-secret-key-for-ci-minimum-32-chars
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          GROQ_API_KEY: test
+          EMAIL_USER: test@test.com
+          EMAIL_PASSWORD: test
+          FRONTEND_URL: http://localhost:3000
+          DEBUG: "true"
+          APP_ENV: testing
+        run: |
+          pytest backend/tests/agents/ -v --tb=short
+
+      - name: Run e2e tests
+        env:
+          PYTHONPATH: .
+          DATABASE_URL: sqlite:///./test.sqlite
+          SECRET_KEY: test-secret-key-for-ci-minimum-32-chars
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          GROQ_API_KEY: test
+          EMAIL_USER: test@test.com
+          EMAIL_PASSWORD: test
+          FRONTEND_URL: http://localhost:3000
+          DEBUG: "true"
+          APP_ENV: testing
+        run: |
+          pytest backend/tests/e2e/ -v --tb=short
+
+      - name: Generate coverage report
+        env:
+          PYTHONPATH: .
+          DATABASE_URL: sqlite:///./test.sqlite
+          SECRET_KEY: test-secret-key-for-ci-minimum-32-chars
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+          CLOUDINARY_CLOUD_NAME: test
+          CLOUDINARY_API_KEY: test
+          CLOUDINARY_API_SECRET: test
+          GROQ_API_KEY: test
+          EMAIL_USER: test@test.com
+          EMAIL_PASSWORD: test
+          FRONTEND_URL: http://localhost:3000
+          DEBUG: "true"
+          APP_ENV: testing
+        run: |
+          pytest backend/tests/ --cov=backend --cov-report=xml --cov-fail-under=50 -v -m "not slow"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+
+      - name: Save test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: |
+            pytest.xml
+            htmlcov/
+
+  # ───────────────────────────────────────
+  # JOB 2: SECURITY SCAN
+  # ───────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install security tools
+        run: |
+          pip install bandit safety
+
+      - name: Run Bandit security scan
+        run: |
+          bandit -r backend/ -x tests/ -ll --skip B101,B601 -f txt || true
+
+      - name: Check for known vulnerabilities
+        run: |
+          safety check -r requirements.txt --ignore 70612 || true
+
+  # ───────────────────────────────────────
+  # JOB 3: DEPLOY BACKEND TO RAILWAY
+  # (only on push to main branch)
+  # ───────────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend to Railway
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: |
+          npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway up --service smart-community-backend
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting 60 seconds for deployment to complete..."
+          sleep 60
+
+      - name: Run database migrations
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway run python scripts/migrate.py
+
+      - name: Health check after deploy
+        env:
+          BACKEND_URL: ${{ secrets.RAILWAY_BACKEND_URL }}
+        run: |
+          pip install httpx
+          python scripts/health_check.py $BACKEND_URL
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Backend deployed successfully to Railway"
+          echo "URL: ${{ secrets.RAILWAY_BACKEND_URL }}"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Backend deployment FAILED"
+          echo "Check Railway logs for details"
+
+  # ───────────────────────────────────────
+  # JOB 4: DEPLOY FRONTEND TO VERCEL
+  # (only on push to main branch)
+  # ───────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel deploy frontend/ --prod --token=$VERCEL_TOKEN
+
+      - name: Notify on success
+        if: success()
+        run: echo "✅ Frontend deployed to Vercel successfully"

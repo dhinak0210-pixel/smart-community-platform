@@ -44,11 +44,14 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7, description="Refresh token validity period in days")
 
     # --------------------------------------------------------------------------
-    # Cloudinary Credentials (Optional)
+    # Cloudinary Credentials & Upload Settings
     # --------------------------------------------------------------------------
     CLOUDINARY_CLOUD_NAME: Optional[str] = Field(default=None, description="Cloudinary cloud name")
     CLOUDINARY_API_KEY: Optional[str] = Field(default=None, description="Cloudinary API key")
     CLOUDINARY_API_SECRET: Optional[str] = Field(default=None, description="Cloudinary API secret")
+    MAX_IMAGE_SIZE_MB: int = Field(default=5, description="Maximum image upload size in MB")
+    ALLOWED_IMAGE_TYPES: List[str] = Field(default=["jpg", "jpeg", "png", "webp"], description="Allowed image extensions")
+    MAX_IMAGES_PER_ISSUE: int = Field(default=5, description="Max images per issue")
 
     # --------------------------------------------------------------------------
     # Email Settings (Optional)
@@ -65,6 +68,28 @@ class Settings(BaseSettings):
     # AI & External APIs (Phase 2/3)
     # --------------------------------------------------------------------------
     GROQ_API_KEY: Optional[str] = Field(default=None, description="Groq API key for LLM services")
+    HUGGINGFACE_MODEL_CACHE_DIR: str = Field(default="./ml_models", description="Local cache directory for HuggingFace models")
+    YOLO_MODEL_PATH: str = Field(default="./ml_models/yolov8n.pt", description="Path to YOLOv8 model weights")
+    ML_CONFIDENCE_THRESHOLD: float = Field(default=0.75, description="Threshold for AI confidence ratings")
+    ML_AUTO_APPLY_THRESHOLD: float = Field(default=0.85, description="Threshold for auto-applying AI classifications")
+    ML_BATCH_SIZE: int = Field(default=8, description="Batch size for ML inference tasks")
+    ML_DEVICE: str = Field(default="cpu", description="Inference device (cpu or cuda)")
+    FRONTEND_URL: str = Field(default="http://localhost:8001", description="Frontend base URL")
+
+    # --------------------------------------------------------------------------
+    # AI Agents Settings
+    # --------------------------------------------------------------------------
+    AGENT_REPORTER_INTERVAL_MINUTES: int = Field(default=5, description="Reporter agent schedule in minutes")
+    AGENT_RESOLVER_INTERVAL_HOURS: int = Field(default=6, description="Resolver agent schedule in hours")
+    AGENT_ANALYST_DAY_OF_WEEK: int = Field(default=6, description="Analyst agent day of week (6=Sunday)")
+    AGENT_ANALYST_HOUR: int = Field(default=2, description="Analyst agent hour (2am)")
+    AGENT_VOLUNTEER_INTERVAL_HOURS: int = Field(default=1, description="Volunteer agent schedule in hours")
+    AGENT_COMMUNITY_MAX_TOKENS: int = Field(default=300, description="Community agent response max tokens")
+    AGENT_MAX_RETRIES: int = Field(default=3, description="Max retries per agent operation")
+    AGENT_ESCALATION_DAYS: int = Field(default=7, description="Days before in_progress escalation")
+    AGENT_AUTO_CLOSE_DAYS: int = Field(default=7, description="Days before pending_citizen auto close")
+    AGENT_MIN_VOLUNTEER_MATCH_SCORE: float = Field(default=0.6, description="Minimum match score threshold")
+    SYSTEM_USER_ID: int = Field(default=1, description="Special system user ID for agent actions")
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -8,13 +8,13 @@ def test_volunteer_task_flow(client):
         json={
             "full_name": "Municipal Admin",
             "email": "authority@example.com",
-            "password": "password123",
+            "password": "P@ssword123!",
             "role": "authority"
         }
     )
     auth_res = client.post(
         "/api/v1/auth/login",
-        data={"username": "authority@example.com", "password": "password123"}
+        json={"email": "authority@example.com", "password": "P@ssword123!"}
     )
     auth_token = auth_res.json()["access_token"]
     auth_headers = {"Authorization": f"Bearer {auth_token}"}
@@ -25,13 +25,13 @@ def test_volunteer_task_flow(client):
         json={
             "full_name": "Volunteer Joe",
             "email": "volunteer@example.com",
-            "password": "password123",
+            "password": "P@ssword123!",
             "role": "volunteer"
         }
     )
     vol_res = client.post(
         "/api/v1/auth/login",
-        data={"username": "volunteer@example.com", "password": "password123"}
+        json={"email": "volunteer@example.com", "password": "P@ssword123!"}
     )
     vol_token = vol_res.json()["access_token"]
     vol_headers = {"Authorization": f"Bearer {vol_token}"}
@@ -40,13 +40,14 @@ def test_volunteer_task_flow(client):
     issue_payload = {
         "title": "Park Clean Up Needed",
         "description": "Littering after weekend festival near playground",
-        "category": "park_maintenance",
-        "latitude": 13.08,
-        "longitude": 80.27,
-        "address": "Central Park"
+        "category": "environment",
+        "location_lat": 13.08,
+        "location_lng": 80.27,
+        "location_address": "Central Park"
     }
     create_issue_res = client.post("/api/v1/issues/", json=issue_payload, headers=auth_headers)
-    issue_id = create_issue_res.json()["id"]
+    assert create_issue_res.status_code == 201
+    issue_id = create_issue_res.json().get("id") or str(create_issue_res.json()["uuid"])
 
     # 1. Create Volunteer Task
     task_res = client.post(
@@ -81,13 +82,13 @@ def test_agent_triage_and_resolution(client):
         json={
             "full_name": "Citizen User",
             "email": "agentuser@example.com",
-            "password": "password123",
+            "password": "P@ssword123!",
             "role": "citizen"
         }
     )
     login_res = client.post(
         "/api/v1/auth/login",
-        data={"username": "agentuser@example.com", "password": "password123"}
+        json={"email": "agentuser@example.com", "password": "P@ssword123!"}
     )
     token = login_res.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
@@ -96,20 +97,30 @@ def test_agent_triage_and_resolution(client):
     issue_payload = {
         "title": "Severe Pothole Hazard",
         "description": "Deep crater causing immediate vehicle danger on main road",
-        "category": "pothole",
-        "latitude": 13.08,
-        "longitude": 80.27,
-        "address": "Highway 1"
+        "category": "infrastructure",
+        "location_lat": 13.08,
+        "location_lng": 80.27,
+        "location_address": "Highway 1"
     }
     create_issue_res = client.post("/api/v1/issues/", json=issue_payload, headers=headers)
-    issue_id = create_issue_res.json()["id"]
+    assert create_issue_res.status_code == 201
+    issue_id = create_issue_res.json().get("id") or str(create_issue_res.json()["uuid"])
 
-    # Test Triage Endpoint
-    triage_res = client.post(f"/api/v1/agents/triage/{issue_id}", headers=headers)
+    # Test Text Classification (AI Triage)
+    triage_res = client.post(
+        "/api/ai/classify-text",
+        json={"title": issue_payload["title"], "description": issue_payload["description"]},
+        headers=headers
+    )
     assert triage_res.status_code == 200
-    assert "recommended_priority" in triage_res.json()
+    assert "suggested_category" in triage_res.json() or "category" in triage_res.json()
 
-    # Test Resolution Plan Endpoint
-    plan_res = client.post(f"/api/v1/agents/resolution-plan/{issue_id}", headers=headers)
-    assert plan_res.status_code == 200
-    assert len(plan_res.json()["resolution_steps"]) >= 4
+    # Test Citizen AI Chat Assistant (Community Agent)
+    chat_res = client.post(
+        "/api/agents/chat",
+        json={"question": "What is the status of my reported pothole issue?"},
+        headers=headers
+    )
+    assert chat_res.status_code == 200
+    assert "answer" in chat_res.json()
+

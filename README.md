@@ -1,121 +1,219 @@
-# Smart Community Platform 🏙️
+# 🏘️ Smart Community Platform
 
-A modern, full-stack civic-tech platform connecting citizens with local authorities to report, track, and resolve community infrastructure issues intelligently.
+> An intelligent civic-tech platform connecting citizens with
+> local authorities to report, track, and resolve community issues.
 
----
+[![Tests](https://github.com/username/smart-community/actions/workflows/deploy.yml/badge.svg)](https://github.com/username/smart-community/actions)
+[![Coverage](https://codecov.io/gh/username/smart-community/badge.svg)](https://codecov.io/gh/username/smart-community)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🌟 Key Features
+## 🌟 Live Demo
 
-- 📍 **Interactive Live Map**: Real-time Leaflet.js dark map displaying reported community hazards with status badges.
-- 🤖 **AI Issue Auto-Categorization**: Natural Language Processing (NLP) categorizer classifying issue reports (`Pothole`, `Street Light`, `Water Supply`, `Waste Management`, `Traffic Signal`, `Park Maintenance`).
-- 🤖 **Multi-Agent Workflow Engine**:
-  - `ReporterAgent`: Automated severity and urgency scoring.
-  - `ResolverAgent`: Municipal action plan generation.
-  - `AnalystAgent`: Executive civic health reporting.
-  - `CommunityAgent`: Volunteer skill matching.
-- 📊 **Civic Analytics Dashboard**: Chart.js visual insights on resolution rates, category distributions, and active dispatches.
-- 📸 **Media Upload Handling**: Validated image uploads with Cloudinary integration and local filesystem fallback.
-- 🔐 **JWT Authentication & RBAC**: Password hashing using bcrypt with Role-Based Access Control (`citizen`, `volunteer`, `authority`, `admin`).
-- ⚡ **Production-Ready Stack**: FastAPI, SQLAlchemy 2.0, Alembic migrations, Pydantic V2 schemas, and 100% passing Pytest test suite.
-
----
-
-## 🛠️ Technology Stack
-
-| Component | Technology |
+| | URL |
 |---|---|
-| **Backend Framework** | FastAPI (Python 3.12) |
-| **ORM & Database** | SQLAlchemy 2.0 + PostgreSQL / SQLite |
-| **Database Migrations** | Alembic |
-| **Authentication** | Passlib (Bcrypt) + Python-Jose (JWT) |
-| **Frontend UI** | Vanilla JS, Leaflet.js, Bootstrap 5.3, Chart.js |
-| **Image Storage** | Cloudinary API + Pillow fallback |
-| **Testing** | Pytest + Starlette TestClient |
+| **Frontend** | https://smartcommunity.vercel.app |
+| **API** | https://smartcommunity-api.railway.app |
+| **API Docs** | https://smartcommunity-api.railway.app/docs |
+
+Demo accounts:
+- Citizen: `citizen1@demo.com` / `DemoPass123!`
+- Authority: `roads@municipality.demo` / `DemoPass123!`
+- Admin: `admin@demo.com` / `DemoPass123!`
 
 ---
 
-## 🚀 Quick Start Guide
+## ✨ Features
 
-### 1. Prerequisites
-- Python 3.10+
-- Virtualenv
+### For Citizens
+- 📍 Report community issues with location pin on map
+- 📸 Upload photos for visual evidence
+- 🗺️ See all community issues on interactive map
+- 👍 Vote on issues you care about
+- 💬 Comment and follow issue progress
+- 📧 Get email updates when your issue status changes
+- ✅ Confirm when your issue is actually fixed
 
-### 2. Environment Setup
-```bash
-# Clone repository and enter directory
-cd dashbord
+### For Authorities
+- 📊 Analytics dashboard with charts and heatmaps
+- 🔔 Notifications for new high-priority issues
+- 📋 Manage and update issue status
+- 📨 Send official updates to reporters
+- 📈 Department performance tracking
+- 📅 Weekly automated analytics reports
 
-# Run automated setup script
-bash setup.sh
+### AI Features
+- 🤖 Auto-categorization from description text
+- 🖼️ Image analysis to detect issue type (YOLO)
+- 🔍 Automatic duplicate detection
+- ⚡ Smart priority assignment
+- 📍 Hotspot prediction for proactive planning
+- 💬 24/7 AI community assistant (RAG)
 
-# Activate virtual environment
-source venv/bin/activate
-```
-
-### 3. Environment Variables (`.env`)
-Create or edit `.env` in the project root:
-```env
-APP_NAME="Smart Community Platform"
-SECRET_KEY="supersecretjwtkeychangeinproduction"
-DATABASE_URL="sqlite:///./smart_community.db"
-PORT=8001
-CLOUDINARY_CLOUD_NAME=""
-CLOUDINARY_API_KEY=""
-CLOUDINARY_API_SECRET=""
-```
-
-### 4. Running Database Migrations
-```bash
-PYTHONPATH=. venv/bin/alembic upgrade head
-```
-
-### 5. Starting Development Server
-```bash
-venv/bin/uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload
-```
-
-Access application:
-- 🌐 **Web UI**: [http://localhost:8001/static/index.html](http://localhost:8001/static/index.html)
-- 📊 **Analytics Dashboard**: [http://localhost:8001/static/dashboard.html](http://localhost:8001/static/dashboard.html)
-- 📚 **Swagger API Docs**: [http://localhost:8001/docs](http://localhost:8001/docs)
+### Autonomous Agents
+- 🔵 **Reporter Agent**: Processes every new issue within 5 minutes
+- 🟡 **Resolver Agent**: Escalates overdue issues every 6 hours
+- 🟣 **Analyst Agent**: Sends weekly reports every Sunday 2am
+- 🟢 **Volunteer Agent**: Matches volunteers to issues hourly
+- 💬 **Community Agent**: Answers citizen questions 24/7
 
 ---
 
-## 🧪 Running Automated Tests
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Python 3.11/3.12, FastAPI, Uvicorn |
+| **Database** | PostgreSQL (Neon.tech) / SQLite |
+| **ORM** | SQLAlchemy 2.0 + Alembic |
+| **Auth** | JWT (python-jose) + bcrypt |
+| **Storage** | Cloudinary (images) |
+| **Email** | Gmail SMTP |
+| **Maps** | Leaflet.js + OpenStreetMap |
+| **Frontend** | HTML5, CSS3, Vanilla JS, Bootstrap 5 |
+| **ML Text** | DistilBERT (Hugging Face) |
+| **ML Vision** | YOLOv8n (Ultralytics) |
+| **ML Similarity** | MiniLM (sentence-transformers) |
+| **ML Priority** | Random Forest (scikit-learn) |
+| **LLM** | Groq API (llama3-8b) |
+| **Vector DB** | ChromaDB |
+| **Scheduling** | APScheduler |
+| **Hosting** | Railway (backend) + Vercel (frontend) |
+
+---
+
+## 🚀 Quick Start (Local Development)
+
+### Prerequisites
+- Python 3.11+
+- Git
+
+### Setup
 
 ```bash
-PYTHONPATH=. venv/bin/pytest tests/
+# Clone
+git clone https://github.com/username/smart-community.git
+cd smart-community
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Copy and configure environment
+cp .env.example .env
+# Edit .env with your values
+
+# Download ML models (once, takes 5-10 minutes)
+python scripts/download_models.py
+
+# Run database migrations
+alembic upgrade head
+
+# Seed demo data (optional)
+python scripts/seed_data.py
+
+# Start backend
+uvicorn backend.main:app --reload --port 8000
+
+# Open frontend
+# Just open frontend/index.html in your browser
+```
+
+### Running Tests
+
+```bash
+# All tests (sub-20s execution)
+make test
+
+# With coverage
+make test-coverage
+
+# Only unit tests (fastest)
+make test-unit
+
+# Only integration tests
+make test-integration
 ```
 
 ---
 
-## 📁 Repository Structure
+## 📁 Project Structure
 
 ```
+smart-community/
 ├── backend/
-│   ├── main.py             # FastAPI App Entrypoint & Lifespan
-│   ├── config.py           # Centralized Pydantic Settings
-│   ├── database.py         # SQLAlchemy Engine & Session Provider
-│   ├── models/             # ORM Models (User, Issue, Vote, Comment, VolunteerTask, Notification)
-│   ├── schemas/            # Pydantic v2 Schemas (User, Issue, Common)
-│   ├── routes/             # API Endpoints (auth, users, issues, dashboard)
-│   ├── utils/              # Security, Image Upload & Email Helpers
-│   ├── ml/                 # NLP Categorizer & Image Analyzer
-│   └── agents/             # AI Multi-Agent Workflows
+│   ├── main.py              # FastAPI app
+│   ├── config.py            # Settings
+│   ├── database.py          # DB connection
+│   ├── models/              # SQLAlchemy models
+│   ├── schemas/             # Pydantic schemas
+│   ├── routes/              # API endpoints (57 endpoints)
+│   ├── utils/               # Helpers
+│   ├── ml/                  # AI/ML models
+│   ├── agents/              # Autonomous agents
+│   ├── tasks/               # Background tasks
+│   └── migrations/          # Alembic migrations
 ├── frontend/
-│   ├── index.html          # Main Map UI & Reporting Modals
-│   ├── dashboard.html      # Analytics & KPI Dashboard
-│   ├── issue.html          # Issue Detail Page
-│   ├── profile.html        # User Profile Page
-│   ├── css/                # Glassmorphic Stylesheets
-│   └── js/                 # Leaflet Map, Auth & Feed Modules
-├── tests/                  # Pytest Unit & Integration Tests
-├── alembic.ini             # Migration Configuration
-├── requirements.txt        # Python Dependencies
-└── setup.sh                # Setup Script
+│   ├── index.html           # Main map page
+│   ├── issue.html           # Issue detail
+│   ├── dashboard.html       # Authority dashboard
+│   ├── auth.html            # Login/Register
+│   ├── profile.html         # User profile
+│   ├── css/                 # Stylesheets
+│   └── js/                  # JavaScript
+├── tests/                   # Pytest unit, integration, agent & e2e tests
+├── scripts/
+│   ├── download_models.py   # Download ML models
+│   ├── migrate.py           # Run migrations
+│   ├── create_admin.py      # Create admin user
+│   ├── seed_data.py         # Demo data
+│   └── health_check.py      # Verify deployment
+├── .github/
+│   └── workflows/
+│       └── deploy.yml       # CI/CD pipeline
+├── Procfile                 # Railway start command
+├── railway.json             # Railway config
+├── vercel.json              # Vercel config
+├── nixpacks.toml            # Build config
+├── requirements.txt         # Python dependencies
+├── alembic.ini              # Migrations config
+├── pytest.ini               # Test config
+├── Makefile                 # Convenient commands
+└── .env.example             # Environment template
 ```
+
+---
+
+## 📊 API Documentation
+
+Full interactive docs at: `/docs`
+
+| Group | Endpoints | Count |
+|-------|-----------|-------|
+| Authentication | Register, Login, Logout, Reset Password... | 12 |
+| Issues | Create, List, Detail, Vote, Comment, Status... | 20 |
+| Users | Profile, List, Ban, Role, Leaderboard... | 6 |
+| Upload | Image upload, Avatar, Delete... | 6 |
+| AI | Classify, Analyze, Duplicate check, Ask... | 7 |
+| Agents | Status, Trigger, Logs, Community Chat... | 6 |
+| **Total** | | **57** |
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Write tests for your changes
+4. Make sure all tests pass: `make test`
+5. Commit: `git commit -m 'Add amazing feature'`
+6. Push: `git push origin feature/amazing-feature`
+7. Open a Pull Request
 
 ---
 
 ## 📄 License
-Distributed under the MIT License. See `LICENSE` for details.
+
+MIT License - see [LICENSE](LICENSE) file for details.

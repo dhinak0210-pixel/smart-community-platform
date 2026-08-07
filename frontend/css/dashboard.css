@@ -1,11 +1,50 @@
-/* Dashboard Specific Styling */
+/* Dashboard page specific (chart sizes, table overrides) */
 
-canvas {
-  max-width: 100%;
-  margin: 0 auto;
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
-.metric-number {
-  font-weight: 700;
-  letter-spacing: -1px;
+.dashboard-header h2 {
+  margin: 0;
+}
+
+.dashboard-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+#dashboard-issues-table .table {
+  font-size: 0.875rem;
+}
+
+#dashboard-issues-table .table th {
+  background: var(--color-light);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-light);
+  border-bottom: 2px solid var(--color-border);
+}
+
+#dashboard-issues-table .table td {
+  vertical-align: middle;
+}
+
+#last-updated {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+}
+
+@media (max-width: 767.98px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

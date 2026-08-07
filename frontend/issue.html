@@ -1,144 +1,294 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Community Platform | Issue Details</title>
-
-  <!-- Google Fonts & Bootstrap 5.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="description" content="Issue Details - Smart Community Platform">
+  <title>Issue Details - Smart Community Platform</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/components.css" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
-    <div class="container">
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg sticky-top" id="main-navbar">
+    <div class="container-fluid px-3">
       <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
-        <i class="bi bi-buildings-fill text-primary"></i> SmartCommunity
+        <i class="bi bi-houses-fill" style="font-size:1.4rem;color:var(--color-primary)"></i>
+        <span class="navbar-brand-text">Smart Community</span>
       </a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Live Map</a></li>
-          <li class="nav-item"><a class="nav-link" href="dashboard.html">Analytics</a></li>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+          <li class="nav-item d-flex gap-2" id="nav-logged-out">
+            <a href="auth.html" class="btn btn-sm btn-outline-primary">Login</a>
+            <a href="auth.html?tab=register" class="btn btn-sm btn-primary">Register</a>
+          </li>
+          <li class="nav-item d-none align-items-center gap-2" id="nav-logged-in" style="display:none">
+            <a href="dashboard.html" class="btn btn-sm btn-outline-secondary d-none align-items-center gap-1" id="nav-dashboard-link" style="display:none"><i class="bi bi-bar-chart"></i> Dashboard</a>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-light d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown">
+                <span id="nav-user-avatar"></span>
+                <span id="nav-user-name" class="d-none d-md-inline">User</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" onclick="Auth.logout()"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+              </ul>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="container my-4">
-    <div class="row justify-content-center">
+  <!-- BREADCRUMB -->
+  <div class="container-fluid px-3 py-2">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0 small">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item active" id="breadcrumb-title">Issue Details</li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container-fluid px-3 pb-4">
+    <div class="row g-4">
+      <!-- LEFT: Issue content -->
       <div class="col-lg-8">
-        <div class="glass-card p-4 mb-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="index.html" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Map</a>
-            <span class="badge badge-reported fs-6" id="issueDetailStatus">Reported</span>
-          </div>
+        <div id="issue-content">
+          <!-- Loading skeleton -->
+          <div class="skeleton-card"><div class="skeleton-line skeleton-line-lg"></div><div class="skeleton-line skeleton-line-md"></div><div class="skeleton-line skeleton-line-sm"></div></div>
+        </div>
+      </div>
 
-          <h3 class="fw-bold mb-2 text-white" id="issueDetailTitle">Loading issue...</h3>
-          <p class="text-secondary small mb-3">
-            <i class="bi bi-geo-alt-fill text-primary me-1"></i> <span id="issueDetailAddress">...</span> &bull; 
-            <i class="bi bi-tag-fill ms-2 me-1 text-info"></i> <span id="issueDetailCategory">...</span>
-          </p>
-
-          <div class="p-3 rounded bg-dark bg-opacity-50 mb-4 text-light" id="issueDetailDescription">
-            Loading issue details...
-          </div>
-
-          <div class="d-flex gap-2 mb-4">
-            <button class="btn btn-outline-info btn-sm" id="btnGetAiPlan">
-              <i class="bi bi-robot me-1"></i> Generate AI Dispatch Action Plan
-            </button>
-          </div>
-
-          <!-- AI Plan Container -->
-          <div id="aiPlanContainer" class="p-3 glass-card mb-4 d-none">
-            <h6 class="fw-bold text-info mb-2"><i class="bi bi-cpu-fill me-1"></i> AI Resolver Action Plan</h6>
-            <ol id="aiPlanSteps" class="small mb-0 text-light"></ol>
-          </div>
-
-          <!-- Comments Section -->
-          <div class="border-top border-secondary pt-4 mt-2">
-            <h5 class="fw-bold mb-3"><i class="bi bi-chat-left-text-fill me-2 text-primary"></i>Discussion & Comments</h5>
-            <div id="commentsList" class="mb-4">
-              <p class="text-muted small">No comments yet.</p>
-            </div>
-
-            <!-- Add Comment Form -->
-            <form id="formAddComment">
-              <div class="input-group">
-                <input type="text" id="commentText" class="form-control bg-dark text-white" placeholder="Write a community comment..." required>
-                <button class="btn btn-primary-custom" type="submit">Post Comment</button>
-              </div>
-            </form>
-          </div>
+      <!-- RIGHT: Sidebar -->
+      <div class="col-lg-4">
+        <div id="issue-sidebar">
+          <div class="skeleton-card"><div class="skeleton-line skeleton-line-md"></div><div class="skeleton-line skeleton-line-sm"></div></div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/imageHandler.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/issues.js"></script>
+
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const issueId = urlParams.get('id') || 1;
+    document.addEventListener("DOMContentLoaded", async function () {
+      const params = new URLSearchParams(window.location.search);
+      const uuid = params.get("uuid");
+      if (!uuid) {
+        document.getElementById("issue-content").innerHTML = '<div class="empty-state"><i class="bi bi-question-circle"></i><h5>Issue Not Found</h5><p>No issue UUID provided.</p><a href="index.html" class="btn btn-primary">Back to Map</a></div>';
+        return;
+      }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await loadIssueDetail();
-
-      document.getElementById('btnGetAiPlan').addEventListener('click', async () => {
-        try {
-          const res = await fetch(`${CONFIG.API_BASE_URL}/agents/resolution-plan/${issueId}`, {
-            method: 'POST',
-            headers: Auth.getAuthHeader(),
-          });
-          const plan = await res.json();
-          const container = document.getElementById('aiPlanContainer');
-          const stepsOl = document.getElementById('aiPlanSteps');
-          stepsOl.innerHTML = plan.resolution_steps.map(s => `<li class="mb-1">${s}</li>`).join('');
-          container.classList.remove('d-none');
-        } catch (err) {
-          alert('Could not fetch AI plan.');
-        }
-      });
-
-      document.getElementById('formAddComment').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!Auth.isAuthenticated()) {
-          alert('Please login first to comment.');
-          return;
-        }
-        const content = document.getElementById('commentText').value;
-        try {
-          await fetch(`${CONFIG.API_BASE_URL}/issues/${issueId}/comments`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...Auth.getAuthHeader(),
-            },
-            body: JSON.stringify({ content }),
-          });
-          document.getElementById('commentText').value = '';
-          loadIssueDetail();
-        } catch (err) {
-          alert('Failed to post comment.');
-        }
-      });
+      try {
+        const issue = await IssuesAPI.getDetail(uuid);
+        document.title = issue.title + " - Smart Community Platform";
+        document.getElementById("breadcrumb-title").textContent = issue.title;
+        renderIssuePage(issue);
+      } catch (err) {
+        document.getElementById("issue-content").innerHTML = '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><h5>Issue Not Found</h5><p>' + escapeHtml(err.message) + '</p><a href="index.html" class="btn btn-primary">Back to Map</a></div>';
+        document.getElementById("issue-sidebar").innerHTML = "";
+      }
     });
 
-    async function loadIssueDetail() {
-      try {
-        const res = await fetch(`${CONFIG.API_BASE_URL}/issues/${issueId}`);
-        const issue = await res.json();
-        document.getElementById('issueDetailTitle').textContent = issue.title;
-        document.getElementById('issueDetailAddress').textContent = issue.address || 'GPS Coordinates';
-        document.getElementById('issueDetailCategory').textContent = issue.category.replace('_', ' ').toUpperCase();
-        document.getElementById('issueDetailStatus').textContent = issue.status.replace('_', ' ').toUpperCase();
-        document.getElementById('issueDetailDescription').textContent = issue.description;
-      } catch (err) {
-        console.error('Error loading issue:', err);
+    function renderIssuePage(issue) {
+      const content = document.getElementById("issue-content");
+      const sidebar = document.getElementById("issue-sidebar");
+
+      /* --- MAIN CONTENT --- */
+      let galleryHtml = '<div id="image-gallery"></div>';
+
+      const tagsHtml = (issue.ai_tags && issue.ai_tags.length) ? '<div class="mt-2">' + issue.ai_tags.map(t => '<span class="badge bg-light text-dark border me-1">' + escapeHtml(t) + '</span>').join('') + '</div>' : '';
+
+      let resolutionBanner = '';
+      if (issue.status === 'pending_citizen' && Auth.user && issue.reported_by && Auth.user.uuid === issue.reported_by.uuid) {
+        resolutionBanner = '<div class="resolution-banner" id="resolution-banner">' +
+          '<h4><i class="bi bi-party-popper me-2"></i>The authority says this issue is fixed!</h4>' +
+          '<p>Has it been resolved for you?</p>' +
+          '<div class="star-rating" id="resolution-stars">' +
+          [1,2,3,4,5].map(n => '<i class="bi bi-star' + (n <= 3 ? '-fill active' : '') + '" data-star="' + n + '" onclick="setResolutionRating(' + n + ')"></i>').join('') +
+          '</div>' +
+          '<div class="mt-3"><textarea class="form-control mb-3" id="resolution-feedback" placeholder="Optional feedback..." rows="2"></textarea></div>' +
+          '<div class="d-flex justify-content-center gap-3">' +
+          '<button class="btn btn-success" onclick="confirmResolution(\'' + issue.uuid + '\', true)"><i class="bi bi-check-lg me-1"></i>Yes, It Is Fixed!</button>' +
+          '<button class="btn btn-outline-danger" onclick="confirmResolution(\'' + issue.uuid + '\', false)"><i class="bi bi-x-lg me-1"></i>Not Yet Fixed</button>' +
+          '</div></div>';
       }
+
+      content.innerHTML =
+        '<div class="issue-detail-header">' +
+        '<div class="d-flex flex-wrap gap-2 mb-2">' + renderStatusBadge(issue.status) + ' ' + renderPriorityBadge(issue.priority) + ' ' + renderCategoryBadge(issue.category) + '</div>' +
+        '<h1>' + escapeHtml(issue.title) + '</h1>' +
+        '<div class="text-muted small"><i class="bi bi-clock me-1"></i>' + renderTimeAgo(issue.created_at) + ' &bull; <i class="bi bi-eye me-1"></i>' + formatNumber(issue.view_count || 0) + ' views</div>' +
+        '</div>' +
+        galleryHtml +
+        '<div class="mt-3"><p style="white-space:pre-line">' + escapeHtml(issue.description) + '</p>' + tagsHtml + '</div>' +
+        /* Vote section */
+        '<div class="vote-section">' +
+        '<button class="vote-btn" id="vote-btn" onclick="handleVote(\'' + issue.uuid + '\', this)"><i class="bi bi-hand-thumbs-up"></i> <span class="vote-count">' + (issue.vote_count || 0) + '</span></button>' +
+        '<span class="vote-text">' + (issue.vote_count || 0) + ' people want this fixed</span>' +
+        '</div>' +
+        resolutionBanner +
+        /* Comments */
+        '<div class="mt-4">' +
+        '<h5><i class="bi bi-chat-dots me-2"></i>Comments (' + (issue.comment_count || 0) + ')</h5>' +
+        '<div id="comments-container"></div></div>';
+
+      ImageGallery.init("image-gallery", issue.image_urls || (issue.image_url ? [issue.image_url] : []), {
+        editable: (Auth.user && issue.reported_by && Auth.user.uuid === issue.reported_by.uuid) || Auth.isAuthority(),
+        issueUuid: issue.uuid
+      });
+
+      CommentManager.renderComments(issue.comments, document.getElementById("comments-container"), issue.uuid);
+
+      /* --- SIDEBAR --- */
+      let statusHistoryHtml = '';
+      if (issue.history && issue.history.length) {
+        statusHistoryHtml = '<div class="card-elevated p-3 mb-3"><h6 class="mb-3"><i class="bi bi-clock-history me-1"></i>Status History</h6><div class="status-timeline">';
+        issue.history.slice(0, 10).forEach(h => {
+          const color = CONFIG.STATUS_COLORS[h.new_value] || '#6B7280';
+          statusHistoryHtml += '<div class="timeline-item"><div class="timeline-dot" style="background:' + color + '"></div>' +
+            '<div class="timeline-label">' + (CONFIG.STATUS_LABELS[h.new_value] || h.new_value || h.change_type) + '</div>' +
+            '<div class="timeline-date">' + renderTimeAgo(h.created_at) + '</div>' +
+            (h.note ? '<div class="timeline-note">' + escapeHtml(h.note) + '</div>' : '') +
+            (h.changed_by ? '<div class="timeline-user">by ' + escapeHtml(h.changed_by.name) + '</div>' : '') +
+            '</div>';
+        });
+        statusHistoryHtml += '</div></div>';
+      }
+
+      let reporterHtml = '';
+      if (issue.reported_by) {
+        reporterHtml = '<div class="card-elevated p-3 mb-3"><h6 class="mb-3"><i class="bi bi-person me-1"></i>Reporter</h6>' +
+          '<div class="d-flex align-items-center gap-2">' + renderUserAvatar(issue.reported_by, 40) +
+          '<div><a href="profile.html?uuid=' + issue.reported_by.uuid + '" class="fw-semibold">' + escapeHtml(issue.reported_by.name) + '</a>' +
+          '<div class="text-muted small">' + (issue.reported_by.total_issues_reported || 0) + ' issues reported</div></div></div></div>';
+      }
+
+      let locationHtml = '<div class="card-elevated p-3 mb-3"><h6 class="mb-3"><i class="bi bi-geo-alt me-1"></i>Location</h6>';
+      if (issue.location_lat && issue.location_lng) {
+        locationHtml += '<div id="detail-map" class="map-small mb-2"></div>';
+      }
+      locationHtml += '<div class="small">' + escapeHtml(issue.location_address || '') + '</div>';
+      if (issue.location_city) locationHtml += '<div class="small text-muted">' + escapeHtml(issue.location_city) + (issue.location_area ? ', ' + escapeHtml(issue.location_area) : '') + '</div>';
+      locationHtml += '</div>';
+
+      /* Authority actions */
+      let authorityHtml = '';
+      if (Auth.isAuthority()) {
+        authorityHtml = '<div class="card-elevated p-3 mb-3"><h6 class="mb-3"><i class="bi bi-shield-check me-1"></i>Authority Actions</h6>' +
+          '<div class="mb-3"><label class="form-label small fw-semibold">Update Status</label>' +
+          '<select class="form-select form-select-sm" id="authority-status">' +
+          Object.entries(CONFIG.STATUS_LABELS).map(([k, v]) => '<option value="' + k + '"' + (k === issue.status ? ' selected' : '') + '>' + v + '</option>').join('') +
+          '</select>' +
+          '<textarea class="form-control form-control-sm mt-2" id="authority-note" placeholder="Status note (optional)" rows="2"></textarea>' +
+          '<button class="btn btn-primary btn-sm mt-2 w-100" onclick="updateIssueStatus(\'' + issue.uuid + '\')"><i class="bi bi-check me-1"></i>Update Status</button></div>' +
+          '<div class="mb-3"><label class="form-label small fw-semibold">Change Priority</label>' +
+          '<select class="form-select form-select-sm" id="authority-priority">' +
+          Object.entries(CONFIG.PRIORITY_LABELS).map(([k, v]) => '<option value="' + k + '"' + (k === issue.priority ? ' selected' : '') + '>' + v + '</option>').join('') +
+          '</select>' +
+          '<button class="btn btn-outline-primary btn-sm mt-2 w-100" onclick="updateIssuePriority(\'' + issue.uuid + '\')"><i class="bi bi-arrow-up-down me-1"></i>Update Priority</button></div>' +
+          '</div>';
+      }
+
+      sidebar.innerHTML = authorityHtml + locationHtml + statusHistoryHtml + reporterHtml;
+
+      /* Init mini map */
+      if (issue.location_lat && issue.location_lng) {
+        setTimeout(() => {
+          const miniMap = L.map("detail-map", { zoomControl: false, scrollWheelZoom: false, dragging: false }).setView([issue.location_lat, issue.location_lng], 15);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMap);
+          L.circleMarker([issue.location_lat, issue.location_lng], {
+            radius: 10, fillColor: CONFIG.STATUS_COLORS[issue.status] || '#2563EB', fillOpacity: 0.9, color: '#fff', weight: 3
+          }).addTo(miniMap);
+        }, 200);
+      }
+    }
+
+    /* --- Page-level handlers --- */
+    async function submitPageComment(issueUuid) {
+      const textarea = document.getElementById("new-comment");
+      if (!textarea) return;
+      const content = textarea.value.trim();
+      const result = await CommentManager.submitComment(issueUuid, content);
+      if (result) {
+        textarea.value = "";
+        try {
+          const issue = await IssuesAPI.getDetail(issueUuid);
+          CommentManager.renderComments(issue.comments, document.getElementById("comments-container"), issueUuid);
+        } catch (_) {}
+      }
+    }
+
+    async function updateIssueStatus(uuid) {
+      const status = document.getElementById("authority-status").value;
+      const note = document.getElementById("authority-note").value;
+      const btn = event.target;
+      const restore = Loader.setButtonLoading(btn, "Updating...");
+      try {
+        await IssuesAPI.updateStatus(uuid, { status, status_note: note });
+        Toast.success("Status updated!");
+        setTimeout(() => location.reload(), 800);
+      } catch (err) {
+        Toast.error(err.message || "Failed to update status.");
+      } finally { restore(); }
+    }
+
+    async function updateIssuePriority(uuid) {
+      const priority = document.getElementById("authority-priority").value;
+      const btn = event.target;
+      const restore = Loader.setButtonLoading(btn, "Updating...");
+      try {
+        await IssuesAPI.updatePriority(uuid, { priority });
+        Toast.success("Priority updated!");
+        setTimeout(() => location.reload(), 800);
+      } catch (err) {
+        Toast.error(err.message || "Failed to update priority.");
+      } finally { restore(); }
+    }
+
+    let _resolutionRating = 3;
+    function setResolutionRating(n) {
+      _resolutionRating = n;
+      document.querySelectorAll("#resolution-stars i").forEach((star) => {
+        const s = parseInt(star.dataset.star);
+        star.className = "bi bi-star" + (s <= n ? "-fill active" : "");
+      });
+    }
+
+    async function confirmResolution(uuid, confirmed) {
+      const feedback = document.getElementById("resolution-feedback") ? document.getElementById("resolution-feedback").value : "";
+      const btn = event.target;
+      const restore = Loader.setButtonLoading(btn, confirmed ? "Confirming..." : "Submitting...");
+      try {
+        await IssuesAPI.confirmResolution(uuid, { confirmed, rating: _resolutionRating, feedback });
+        if (confirmed) {
+          Toast.success("Thank you for confirming! Issue marked as resolved.");
+        } else {
+          Toast.info("We will notify the authority that the issue is not yet fixed.");
+        }
+        setTimeout(() => location.reload(), 1200);
+      } catch (err) {
+        Toast.error(err.message || "Failed to submit confirmation.");
+      } finally { restore(); }
     }
   </script>
 </body>

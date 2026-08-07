@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volunteer Portal - Smart Community Platform</title>
+  <meta name="description" content="Engage in community service tasks, claim local action items, track volunteer hours, and earn civic reputation badges.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .hero-volunteer {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: #fff;
+      padding: 2.5rem 0;
+      border-radius: var(--radius-lg, 12px);
+      margin-bottom: 2rem;
+    }
+    .task-card {
+      border: 1px solid rgba(124, 58, 237, 0.15);
+      border-radius: 12px;
+      transition: all 0.25s ease;
+      background: #fff;
+    }
+    .task-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
+    }
+    .badge-reputation {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+    }
+    .live-feed-box {
+      background: #1e1e2e;
+      color: #a6adc8;
+      font-family: monospace;
+      font-size: 0.82rem;
+      max-height: 320px;
+      overflow-y: auto;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .live-feed-item {
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0.35rem 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header Navbar -->
+  <nav class="navbar navbar-expand-lg sticky-top border-bottom" style="background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.html">
+        <i class="bi bi-shield-shaded text-primary fs-4"></i> SmartCommunity
+      </a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a href="index.html" class="btn btn-sm btn-outline-secondary"><i class="bi bi-house"></i> Home</a>
+        <a href="dashboard.html" class="btn btn-sm btn-outline-primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="profile.html" class="btn btn-sm btn-light" id="nav-profile-link"><i class="bi bi-person-circle"></i> Profile</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4">
+    <!-- Hero Banner -->
+    <div class="hero-volunteer text-center position-relative overflow-hidden shadow-sm">
+      <div class="container position-relative" style="z-index:2">
+        <h1 class="display-6 fw-bold mb-2"><i class="bi bi-heart-pulse-fill text-warning me-2"></i> Volunteer Action Portal</h1>
+        <p class="lead mb-3" style="max-width:680px; margin:0 auto; font-size:1.05rem;">
+          Connect directly with your community. Claim local verification and repair tasks, log volunteer service hours, and build your civic reputation score.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <button class="btn btn-light text-primary fw-semibold px-4" onclick="VolunteerUI.scrollToTasks()">
+            <i class="bi bi-list-check"></i> Browse Active Tasks
+          </button>
+          <button class="btn btn-outline-light px-4" onclick="VolunteerUI.openSkillModal()">
+            <i class="bi bi-tools"></i> Update My Skills
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Left Column: Active Tasks & Filters -->
+      <div class="col-lg-8" id="tasks-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold m-0"><i class="bi bi-card-checklist text-primary"></i> Available Community Tasks</h4>
+          <span class="badge bg-primary rounded-pill px-3 py-2" id="task-count-badge">Loading...</span>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card p-3 mb-4 border-0 shadow-sm background-light">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="task-search-input" placeholder="Search tasks..." oninput="VolunteerUI.filterTasks()">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <select class="form-select form-select-sm" id="task-status-filter" onchange="VolunteerUI.filterTasks()">
+                <option value="all">All Task Statuses</option>
+                <option value="pending" selected>Open & Unassigned</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="col-md-3 text-end">
+              <button class="btn btn-sm btn-outline-secondary w-100" onclick="VolunteerUI.loadTasks()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tasks List Container -->
+        <div id="tasks-container" class="d-flex flex-column gap-3">
+          <div class="text-center py-5 text-muted">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Loading volunteer action items...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Sidebar (Stats, Live Stream, Leaderboard) -->
+      <div class="col-lg-4">
+        <!-- Live WebSocket Stream -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold"><i class="bi bi-broadcast text-danger"></i> Live Stream</span>
+            <span class="badge bg-success" id="ws-status-badge"><i class="bi bi-circle-fill fs-6" style="font-size:0.5rem"></i> Live</span>
+          </div>
+          <div class="card-body p-2">
+            <div class="live-feed-box" id="ws-live-feed">
+              <div class="text-muted text-center py-3">Connecting to real-time activity stream...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Volunteer Impact Summary -->
+        <div class="card border-0 shadow-sm mb-4 bg-gradient-primary text-white" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+          <div class="card-body p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-award"></i> Your Impact Score</h5>
+            <div class="d-flex justify-content-around text-center">
+              <div>
+                <h3 class="fw-bold m-0" id="stat-my-hours">0</h3>
+                <small class="opacity-75">Hours Logged</small>
+              </div>
+              <div class="border-start border-white opacity-25"></div>
+              <div>
+                <h3 class="fw-bold m-0" id="stat-my-points">0</h3>
+                <small class="opacity-75">Reputation</small>
+              </div>
+              <div class="border-start border-white opacity-25"></div>
+              <div>
+                <h3 class="fw-bold m-0" id="stat-my-tasks">0</h3>
+                <small class="opacity-75">Completed</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Volunteer Leaderboard -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white fw-bold py-3">
+            <i class="bi bi-trophy text-warning me-1"></i> Community Leaderboard
+          </div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush" id="leaderboard-list">
+              <li class="list-group-item text-center text-muted py-3">Loading top volunteers...</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/volunteers.js"></script>
+</body>
+</html>
