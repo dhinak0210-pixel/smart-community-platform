@@ -1,3 +1,13 @@
+---
+title: Smart Community Platform AI Backend
+emoji: 🏙️
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🏘️ Smart Community Platform
 
 > An intelligent civic-tech platform connecting citizens with
