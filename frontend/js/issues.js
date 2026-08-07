@@ -212,7 +212,7 @@ const ReportForm = {
         const imgInfo = ImageUploader.getImageInfo();
         if (imgInfo.file) {
           Toast.info("Uploading image...");
-          const uploadResp = await API.uploadFile('/upload/temp-image', imgInfo.file);
+          const uploadResp = await IssuesAPI.uploadImage(imgInfo.file);
           imageUrl = uploadResp.url;
           tempId = uploadResp.temp_id;
         }
