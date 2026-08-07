@@ -10,6 +10,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U testuser -d testdb"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +43,7 @@ jobs:
       - name: Run Test Suite
         env:
           PYTHONPATH: .
-          DATABASE_URL: sqlite:///:memory:
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
           SECRET_KEY: ci-secret-key-testing-only
           APP_ENV: testing
         run: |
