@@ -22,18 +22,18 @@ def run_migrations():
     # Step 1: Show current migration status
     try:
         result = subprocess.run(
-            ["alembic", "current"],
+            [sys.executable, "-m", "alembic", "current"],
             capture_output=True, text=True, check=True
         )
         logger.info(f"Current revision: {result.stdout.strip()}")
-    except subprocess.CalledProcessError as e:
-        logger.warning(f"Could not get current revision: {e.stderr}")
+    except Exception as e:
+        logger.warning(f"Could not get current revision: {e}")
 
     # Step 2: Run upgrade to head
     logger.info("Running: alembic upgrade head")
     try:
         result = subprocess.run(
-            ["alembic", "upgrade", "head"],
+            [sys.executable, "-m", "alembic", "upgrade", "head"],
             capture_output=True, text=True, check=True,
             cwd=str(Path(__file__).parent.parent)
         )
@@ -52,7 +52,7 @@ def run_migrations():
     # Step 3: Verify migration succeeded
     try:
         result = subprocess.run(
-            ["alembic", "current"],
+            [sys.executable, "-m", "alembic", "current"],
             capture_output=True, text=True, check=True
         )
         logger.info(f"New revision: {result.stdout.strip()}")
