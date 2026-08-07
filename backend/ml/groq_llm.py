@@ -28,8 +28,18 @@ async def call_groq(
 
     client = model_manager.get("groq_client")
     if client is None:
-        logger.warning("Groq client not available")
-        return None
+        from backend.config import settings
+        if getattr(settings, "GROQ_API_KEY", None):
+            try:
+                from groq import Groq
+                client = Groq(api_key=settings.GROQ_API_KEY)
+                model_manager.models["groq_client"] = client
+            except Exception as e:
+                logger.warning(f"Failed to auto-initialize Groq client: {e}")
+                return None
+        else:
+            logger.warning("Groq client and GROQ_API_KEY not available")
+            return None
 
     try:
         messages = []
