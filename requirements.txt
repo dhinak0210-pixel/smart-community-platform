@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # ───────────────────────────────────────
 # CORE FRAMEWORK
 # ───────────────────────────────────────
@@ -44,7 +46,6 @@ emails==0.6
 # AI AND ML
 # ───────────────────────────────────────
 transformers==4.36.0
---extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.1.0+cpu
 torchvision==0.16.0+cpu
 ultralytics==8.0.227
@@ -55,7 +56,7 @@ sentence-transformers==2.2.2
 groq==0.4.2
 faiss-cpu==1.7.4
 chromadb==0.4.22
-regex==2026.7.19
+regex>=2023.10.0
 
 # ───────────────────────────────────────
 # SCHEDULING
