@@ -21,7 +21,7 @@ pinned: false
 
 | | URL |
 |---|---|
-| **Frontend** | https://smartcommunity.vercel.app |
+| **Frontend** | https://frontend-six-beryl-ml7vsvwyjv.vercel.app |
 | **API** | https://smartcommunity-api.railway.app |
 | **API Docs** | https://smartcommunity-api.railway.app/docs |
 
