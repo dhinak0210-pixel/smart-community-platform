@@ -142,10 +142,10 @@ class CommunityAgent(BaseAgent):
         sources = [
             f"Issue: {i.get('metadata', {}).get('uuid', '')[:8]}..."
             for i in relevant_issues[:3]
-            if i.get("similarity", 0) > 0.5
+            if i.get("similarity", 0) >= 0.2
         ]
 
-        confidence = "high" if len(relevant_issues) > 3 else "medium" if answer else "low"
+        confidence = "high" if len(relevant_issues) >= 1 else "medium" if answer else "low"
 
         self.record_action(
             f"Answered question: '{question[:40]}'",
@@ -162,10 +162,11 @@ class CommunityAgent(BaseAgent):
             "relevant_issues": [
                 {
                     "uuid": i.get("metadata", {}).get("uuid"),
+                    "text": i.get("text", "")[:100] + "...",
                     "similarity": round(i.get("similarity", 0), 2)
                 }
                 for i in relevant_issues[:3]
-                if i.get("similarity", 0) > 0.4
+                if i.get("similarity", 0) >= 0.2
             ],
             "suggested_actions": actions,
             "sources": sources

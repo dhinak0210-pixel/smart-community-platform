@@ -272,7 +272,7 @@ const AgentChatWidget = {
         this.addUserMessage(q);
         this.showTyping();
 
-        try:
+        try {
             const token = localStorage.getItem('access_token');
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;

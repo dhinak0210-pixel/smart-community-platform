@@ -27,9 +27,10 @@ async def find_similar_issues(
     from backend.utils.issue_helpers import find_nearby_issues, haversine_distance
 
     # Candidates within 500m
-    candidates = find_nearby_issues(
+    raw_candidates = find_nearby_issues(
         db=db, lat=lat, lng=lng, radius_km=0.5, exclude_id=None
     )
+    candidates = [issue for issue, _dist in raw_candidates]
 
     if exclude_uuid:
         candidates = [c for c in candidates if str(c.uuid) != str(exclude_uuid)]

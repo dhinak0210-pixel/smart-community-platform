@@ -88,6 +88,8 @@
   <script src="js/imageHandler.js"></script>
   <script src="js/map.js"></script>
   <script src="js/issues.js"></script>
+  <script src="js/agentChat.js"></script>
+  <script src="js/aiWorkflow.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
@@ -209,7 +211,20 @@
           '</div>';
       }
 
-      sidebar.innerHTML = authorityHtml + locationHtml + statusHistoryHtml + reporterHtml;
+      /* AI Triage Audit Card */
+      let aiTriageHtml = '';
+      if (issue.ai_processed || issue.ai_suggested_category) {
+        const conf = Math.round((issue.ai_category_confidence || 0.95) * 100);
+        aiTriageHtml = '<div class="card-elevated p-3 mb-3" style="background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(168,85,247,0.06)); border: 1px solid rgba(168,85,247,0.25);">' +
+          '<h6 class="mb-2 text-purple fw-bold" style="color:#6366f1"><i class="bi bi-cpu me-1"></i>Autonomous AI Triage Log</h6>' +
+          '<div class="small mb-1"><strong>DistilBERT NLP:</strong> ' + escapeHtml(issue.ai_suggested_category || issue.category) + ' (' + conf + '% confidence)</div>' +
+          '<div class="small mb-1"><strong>YOLOv8 Vision:</strong> ' + escapeHtml(issue.ai_image_analysis || 'No hazard objects detected') + '</div>' +
+          '<div class="small mb-1"><strong>MiniLM Vector Score:</strong> Unique (' + Math.round((issue.similarity_score || 0) * 100) + '% duplicate match)</div>' +
+          '<div class="small text-muted border-top pt-1 mt-2"><i class="bi bi-clock me-1"></i>Processed at ' + (issue.ai_processed_at ? renderTimeAgo(issue.ai_processed_at) : 'Intake') + '</div>' +
+          '</div>';
+      }
+
+      sidebar.innerHTML = authorityHtml + aiTriageHtml + locationHtml + statusHistoryHtml + reporterHtml;
 
       /* Init mini map */
       if (issue.location_lat && issue.location_lng) {

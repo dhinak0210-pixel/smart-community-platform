@@ -64,6 +64,7 @@ def find_nearby_issues(
     lat: float,
     lng: float,
     radius_km: float = 5.0,
+    exclude_id: Optional[int] = None,
 ) -> List[Tuple[Issue, float]]:
     """Return active issues within radius_km of given coordinates, sorted by distance."""
     # Bounding box optimization for initial SQL query
@@ -76,6 +77,9 @@ def find_nearby_issues(
         Issue.location_lat.between(lat - lat_delta, lat + lat_delta),
         Issue.location_lng.between(lng - lng_delta, lng + lng_delta),
     )
+
+    if exclude_id is not None:
+        query = query.filter(Issue.id != exclude_id)
 
     results: List[Tuple[Issue, float]] = []
     for issue in query.all():

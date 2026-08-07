@@ -248,11 +248,14 @@ function renderIssueCard(issue) {
     ? '<div class="issue-card-img" style="background-image:url(' + issue.image_url + ')"></div>'
     : '<div class="issue-card-img issue-card-img-placeholder"><i class="bi ' + (CONFIG.CATEGORY_ICONS[issue.category] || 'bi-geo-alt') + '"></i></div>';
   const addr = issue.location_address || issue.location_city || "Location not specified";
+  const aiBadge = issue.ai_processed
+    ? '<span class="badge text-white ms-1" style="font-size:0.65rem;background:linear-gradient(135deg,#6366f1,#a855f7)"><i class="bi bi-robot me-1"></i>AI Triaged</span>'
+    : '';
   return (
     '<div class="issue-card" data-uuid="' + issue.uuid + '" onclick="window.location.href=\'issue.html?uuid=' + issue.uuid + '\'">' +
     img +
     '<div class="issue-card-body">' +
-    '<div class="issue-card-header">' + renderCategoryBadge(issue.category) + renderStatusBadge(issue.status) + '</div>' +
+    '<div class="issue-card-header">' + renderCategoryBadge(issue.category) + aiBadge + renderStatusBadge(issue.status) + '</div>' +
     '<h6 class="issue-card-title">' + escapeHtml(issue.title) + '</h6>' +
     '<p class="issue-card-desc">' + escapeHtml(issue.short_description || '') + '</p>' +
     '<div class="issue-card-meta">' +
