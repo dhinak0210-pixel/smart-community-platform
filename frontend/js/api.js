@@ -392,7 +392,7 @@ const IssuesAPI = {
   },
 
   async getStats(city, days) {
-    try:
+    try {
       return await apiRequest("/api/issues/stats" + buildQueryString({ city, days }));
     } catch (e) {
       return {

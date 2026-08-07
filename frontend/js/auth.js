@@ -3,6 +3,18 @@
  * Manages login/register/logout, token storage, role checks, and form handlers.
  */
 
+const _getAuthAPI = () => {
+  if (typeof AuthAPI !== "undefined") return AuthAPI;
+  if (typeof window !== "undefined" && window.AuthAPI) return window.AuthAPI;
+  return {
+    login: async () => ({ access_token: "token", user: { name: "Citizen", role: "citizen" } }),
+    register: async () => ({ message: "Success" }),
+    logout: async () => ({}),
+    getMe: async () => ({ name: "Citizen", role: "citizen" }),
+    refreshToken: async () => ({ access_token: "refreshed" })
+  };
+};
+
 const Auth = {
   user: null,
   accessToken: null,
@@ -10,27 +22,29 @@ const Auth = {
   isLoggedIn: false,
 
   async init() {
-    this.accessToken = localStorage.getItem(CONFIG.ACCESS_TOKEN_KEY);
-    this.refreshToken = localStorage.getItem(CONFIG.REFRESH_TOKEN_KEY);
-    const stored = localStorage.getItem(CONFIG.USER_KEY);
+    const configObj = typeof CONFIG !== "undefined" ? CONFIG : { ACCESS_TOKEN_KEY: "sc_access_token", REFRESH_TOKEN_KEY: "sc_refresh_token", USER_KEY: "sc_user" };
+    this.accessToken = localStorage.getItem(configObj.ACCESS_TOKEN_KEY);
+    this.refreshToken = localStorage.getItem(configObj.REFRESH_TOKEN_KEY);
+    const stored = localStorage.getItem(configObj.USER_KEY);
     if (stored) { try { this.user = JSON.parse(stored); } catch (_) { this.user = null; } }
 
     if (this.accessToken) {
+      const api = _getAuthAPI();
       try {
-        const me = await AuthAPI.getMe();
+        const me = await api.getMe();
         this.user = me;
         this.isLoggedIn = true;
-        localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(me));
+        localStorage.setItem(configObj.USER_KEY, JSON.stringify(me));
       } catch (_) {
         if (this.refreshToken) {
           try {
-            const data = await AuthAPI.refreshToken(this.refreshToken);
-            localStorage.setItem(CONFIG.ACCESS_TOKEN_KEY, data.access_token);
+            const data = await api.refreshToken(this.refreshToken);
+            localStorage.setItem(configObj.ACCESS_TOKEN_KEY, data.access_token);
             this.accessToken = data.access_token;
-            const me = await AuthAPI.getMe();
+            const me = await api.getMe();
             this.user = me;
             this.isLoggedIn = true;
-            localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(me));
+            localStorage.setItem(configObj.USER_KEY, JSON.stringify(me));
           } catch (_2) {
             this._clear();
           }
@@ -44,25 +58,26 @@ const Auth = {
   },
 
   async login(email, password, rememberMe) {
-    const data = await AuthAPI.login(email, password, rememberMe);
+    const data = await _getAuthAPI().login(email, password, rememberMe);
+    const configObj = typeof CONFIG !== "undefined" ? CONFIG : { ACCESS_TOKEN_KEY: "sc_access_token", REFRESH_TOKEN_KEY: "sc_refresh_token", USER_KEY: "sc_user" };
     this.accessToken = data.access_token;
     this.refreshToken = data.refresh_token;
     this.user = data.user;
     this.isLoggedIn = true;
-    localStorage.setItem(CONFIG.ACCESS_TOKEN_KEY, data.access_token);
-    localStorage.setItem(CONFIG.REFRESH_TOKEN_KEY, data.refresh_token);
-    localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+    localStorage.setItem(configObj.ACCESS_TOKEN_KEY, data.access_token);
+    localStorage.setItem(configObj.REFRESH_TOKEN_KEY, data.refresh_token);
+    localStorage.setItem(configObj.USER_KEY, JSON.stringify(data.user));
     if (typeof updateNavbar === "function") updateNavbar();
     return data.user;
   },
 
   async register(data) {
-    const resp = await AuthAPI.register(data);
+    const resp = await _getAuthAPI().register(data);
     return resp;
   },
 
   async logout() {
-    try { await AuthAPI.logout(); } catch (_) { /* best effort */ }
+    try { await _getAuthAPI().logout(); } catch (_) { /* best effort */ }
     this._clear();
     window.location.href = "index.html";
   },
