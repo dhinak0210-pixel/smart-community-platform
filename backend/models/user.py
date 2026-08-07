@@ -10,7 +10,7 @@ from sqlalchemy import (
     String, Integer, Float, Boolean, DateTime, Enum as SQLEnum, Index, CheckConstraint
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-from sqlalchemy.dialects.postgresql import UUID
+from backend.models.issue import GUID
 
 from backend.database import Base
 
@@ -35,7 +35,7 @@ class User(Base):
 
     # Core Fields
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, index=True, comment="Primary key integer ID")
-    uuid: Mapped[uuid_pkg.UUID] = mapped_column(UUID(as_uuid=True), default=uuid_pkg.uuid4, unique=True, index=True, nullable=False, comment="Public unique UUID for API responses")
+    uuid: Mapped[uuid_pkg.UUID] = mapped_column(GUID(), default=uuid_pkg.uuid4, unique=True, index=True, nullable=False, comment="Public unique UUID for API responses")
     name: Mapped[str] = mapped_column(String(100), nullable=False, comment="User full name (stripped of whitespace)")
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False, comment="User email address (always lowercase)")
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False, comment="Bcrypt password hash (never returned in API responses)")
