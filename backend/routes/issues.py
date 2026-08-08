@@ -339,7 +339,8 @@ def get_platform_issue_stats(db: Session = Depends(get_db)):
     return IssueStatsResponse(**stats_data)
 
 
-@router.get("/", response_model=IssueListResponse)
+@router.get("", response_model=IssueListResponse)
+@router.get("/", response_model=IssueListResponse, include_in_schema=False)
 def list_issues(
     category: Optional[IssueCategory] = None,
     status: Optional[IssueStatus] = None,
