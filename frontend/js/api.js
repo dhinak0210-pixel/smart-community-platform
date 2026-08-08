@@ -148,6 +148,17 @@ const API = {
       headers: { ...(options.headers || {}) }
     });
   },
+  uploadFile(endpoint, file, fieldName = "file", options = {}) {
+    const fd = new FormData();
+    fd.append(fieldName, file);
+    const targetEndpoint = endpoint.startsWith("/api") ? endpoint : "/api" + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
+    return apiRequest(targetEndpoint, {
+      ...options,
+      method: "POST",
+      body: fd,
+      headers: { ...(options.headers || {}) }
+    });
+  },
   put(endpoint, body = {}, options = {}) {
     return apiRequest(endpoint, {
       ...options,
