@@ -38,7 +38,8 @@ RUN python scripts/download_models_lite.py
 
 EXPOSE 10000
 
-# Execute database migrations and launch FastAPI on $PORT
-CMD ["sh", "-c", "PYTHONPATH=. python scripts/migrate.py && uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]
+# Launch FastAPI directly (main.py lifespan automatically calls init_db())
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]
+
 
 
