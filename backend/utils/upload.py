@@ -497,6 +497,7 @@ async def upload_temp_image(
                 "temp_id": temp_id,
                 "public_id": result["public_id"],
                 "url": result["secure_url"],
+                "image_url": result["secure_url"],
                 "thumbnail_url": thumb_url,
                 "expires_in": "24 hours"
             }
@@ -518,6 +519,7 @@ async def upload_temp_image(
         "temp_id": temp_id,
         "public_id": filename,
         "url": local_url,
+        "image_url": local_url,
         "thumbnail_url": local_url,
         "expires_in": "24 hours"
     }
@@ -528,17 +530,30 @@ def move_temp_to_issue(
     issue_uuid: str,
     image_index: int = 0
 ) -> Dict[str, Any]:
-    """Moves uploaded temporary image to permanent issue folder location in Cloudinary."""
+    """Moves uploaded temporary image to permanent issue folder location in Cloudinary or local storage."""
     if not (settings.CLOUDINARY_CLOUD_NAME and settings.CLOUDINARY_API_KEY and settings.CLOUDINARY_API_SECRET):
-        url = f"/uploads/{temp_public_id}"
-        return {"url": url, "public_id": temp_public_id, "thumbnail_url": url}
+        filename = temp_public_id
+        if filename.startswith("/uploads/"):
+            filename = filename.replace("/uploads/", "")
+        elif filename.startswith("uploads/"):
+            filename = filename.replace("uploads/", "")
+
+        if not filename.endswith((".jpg", ".jpeg", ".png", ".webp")):
+            filename = f"{filename}.jpg"
+
+        url = f"/uploads/{filename}"
+        return {"url": url, "image_url": url, "public_id": filename, "thumbnail_url": url}
 
     image_name = "primary" if image_index == 0 else f"img_{image_index:03d}"
     new_public_id = f"{CLOUDINARY_BASE_FOLDER}/issues/{issue_uuid}/{image_name}"
 
+    full_temp_public_id = temp_public_id
+    if not full_temp_public_id.startswith(f"{CLOUDINARY_BASE_FOLDER}/temp/"):
+        full_temp_public_id = f"{CLOUDINARY_BASE_FOLDER}/temp/{temp_public_id}"
+
     try:
         result = cloudinary.uploader.rename(
-            temp_public_id,
+            full_temp_public_id,
             new_public_id,
             overwrite=True
         )
@@ -546,17 +561,23 @@ def move_temp_to_issue(
         cloudinary.uploader.remove_tag("temp", [new_public_id])
 
         variants = get_image_variants(new_public_id)
+        final_url = result.get("secure_url", variants["original"])
         return {
-            "url": result.get("secure_url", variants["original"]),
+            "url": final_url,
+            "image_url": final_url,
             "public_id": new_public_id,
             "thumbnail_url": variants["thumbnail"]
         }
     except Exception as e:
-        logger.error(f"Failed to move temp image '{temp_public_id}' to '{new_public_id}': {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to finalize uploaded image."
-        )
+        logger.error(f"Failed to move temp image '{full_temp_public_id}' to '{new_public_id}': {e}")
+        variants = get_image_variants(full_temp_public_id)
+        fallback_url = variants["original"]
+        return {
+            "url": fallback_url,
+            "image_url": fallback_url,
+            "public_id": full_temp_public_id,
+            "thumbnail_url": variants["thumbnail"]
+        }
 
 
 async def cleanup_temp_images(older_than_hours: int = 24) -> Dict[str, Any]:

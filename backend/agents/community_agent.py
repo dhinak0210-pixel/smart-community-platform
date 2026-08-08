@@ -218,7 +218,7 @@ class CommunityAgent(BaseAgent):
             select(Issue)
             .where(
                 and_(
-                    Issue.reported_by == user_id,
+                    Issue.reporter_id == user_id,
                     Issue.deleted_at.is_(None)
                 )
             )

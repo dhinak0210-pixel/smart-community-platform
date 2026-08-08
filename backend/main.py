@@ -331,11 +331,16 @@ def list_api_endpoints():
     return {"total": len(endpoints), "endpoints": endpoints}
 
 
-# Unified Local Hosting: Mount Frontend Static Files at Root
+# Unified Local Hosting: Mount Uploads and Frontend Static Files
 import os
 from fastapi.staticfiles import StaticFiles
+
+uploads_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+os.makedirs(uploads_path, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
 
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+
 

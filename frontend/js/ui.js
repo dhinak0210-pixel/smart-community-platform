@@ -231,11 +231,21 @@ function renderTimeAgo(dateString) {
   return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function formatImageUrl(url) {
+  if (!url) return "";
+  if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://") || url.startsWith("//")) {
+    return url;
+  }
+  const baseUrl = (typeof CONFIG !== "undefined" && CONFIG.API_BASE_URL) ? CONFIG.API_BASE_URL : "";
+  return baseUrl + (url.startsWith("/") ? url : "/" + url);
+}
+
 function renderUserAvatar(user, size) {
   size = size || 40;
   if (!user) return '<div class="avatar-circle" style="width:' + size + 'px;height:' + size + 'px"><i class="bi bi-person"></i></div>';
   if (user.avatar_url) {
-    return '<img src="' + user.avatar_url + '" alt="' + (user.name || '') + '" class="avatar-img" style="width:' + size + 'px;height:' + size + 'px" loading="lazy">';
+    const avatarSrc = formatImageUrl(user.avatar_url);
+    return '<img src="' + avatarSrc + '" alt="' + (user.name || '') + '" class="avatar-img" style="width:' + size + 'px;height:' + size + 'px" loading="lazy">';
   }
   const name = user.name || "U";
   const initials = name.split(" ").map((w) => w[0]).join("").substring(0, 2).toUpperCase();
@@ -244,8 +254,9 @@ function renderUserAvatar(user, size) {
 }
 
 function renderIssueCard(issue) {
-  const img = issue.image_url
-    ? '<div class="issue-card-img" style="background-image:url(' + issue.image_url + ')"></div>'
+  const imgSrc = issue.image_url ? formatImageUrl(issue.image_url) : null;
+  const img = imgSrc
+    ? '<div class="issue-card-img" style="background-image:url(' + imgSrc + ')"></div>'
     : '<div class="issue-card-img issue-card-img-placeholder"><i class="bi ' + (CONFIG.CATEGORY_ICONS[issue.category] || 'bi-geo-alt') + '"></i></div>';
   const addr = issue.location_address || issue.location_city || "Location not specified";
   const aiBadge = issue.ai_processed

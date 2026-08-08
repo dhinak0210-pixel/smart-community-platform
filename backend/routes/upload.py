@@ -42,6 +42,7 @@ async def upload_temporary_image(
         "temp_id": result["temp_id"],
         "public_id": result["public_id"],
         "url": result["url"],
+        "image_url": result["url"],
         "thumbnail_url": result["thumbnail_url"],
         "session_id": sess_id,
         "expires_in": "24 hours",

@@ -214,10 +214,13 @@ async def upload_issue_image_endpoint(
     """Upload an image photo for an issue report (temp upload)."""
     res = await upload_temp_image(file, session_id=str(current_user.uuid))
     return {
+        "url": res["url"],
         "image_url": res["url"],
         "temp_id": res["temp_id"],
+        "public_id": res.get("public_id", res["temp_id"]),
         "thumbnail_url": res["thumbnail_url"]
     }
+
 
 
 @router.post("/{issue_uuid}/images", response_model=IssueDetail)

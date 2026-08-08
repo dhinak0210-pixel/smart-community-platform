@@ -127,6 +127,54 @@ async function _handle401(endpoint, options) {
 }
 
 /* ================================================================
+   GENERIC API HELPER
+   ================================================================ */
+const API = {
+  get(endpoint, options = {}) {
+    return apiRequest(endpoint, { ...options, method: "GET" });
+  },
+  post(endpoint, body = {}, options = {}) {
+    return apiRequest(endpoint, {
+      ...options,
+      method: "POST",
+      body: typeof body === "string" ? body : JSON.stringify(body)
+    });
+  },
+  postForm(endpoint, formData, options = {}) {
+    return apiRequest(endpoint, {
+      ...options,
+      method: "POST",
+      body: formData,
+      headers: { ...(options.headers || {}) }
+    });
+  },
+  put(endpoint, body = {}, options = {}) {
+    return apiRequest(endpoint, {
+      ...options,
+      method: "PUT",
+      body: typeof body === "string" ? body : JSON.stringify(body)
+    });
+  },
+  patch(endpoint, body = {}, options = {}) {
+    return apiRequest(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: typeof body === "string" ? body : JSON.stringify(body)
+    });
+  },
+  delete(endpoint, body = null, options = {}) {
+    return apiRequest(endpoint, {
+      ...options,
+      method: "DELETE",
+      body: body ? (typeof body === "string" ? body : JSON.stringify(body)) : undefined
+    });
+  }
+};
+
+window.API = API;
+
+
+/* ================================================================
    AUTH API
    ================================================================ */
 const AuthAPI = {
@@ -299,25 +347,40 @@ const IssuesAPI = {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      return await apiRequest("/api/issues/upload", {
+      const res = await apiRequest("/api/issues/upload", {
         method: "POST",
         body: fd,
         headers: {}
       });
+      return {
+        url: res.url || res.image_url,
+        image_url: res.image_url || res.url,
+        temp_id: res.temp_id || res.public_id,
+        public_id: res.public_id || res.temp_id,
+        thumbnail_url: res.thumbnail_url || res.url || res.image_url
+      };
     } catch (e) {
       console.warn("IssuesAPI.uploadImage backend upload failed, converting to local data URL:", e);
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = () => {
+          const dataUrl = reader.result;
           resolve({
-            url: reader.result,
-            temp_id: "temp_img_" + Date.now()
+            url: dataUrl,
+            image_url: dataUrl,
+            temp_id: "temp_img_" + Date.now(),
+            public_id: "temp_img_" + Date.now(),
+            thumbnail_url: dataUrl
           });
         };
         reader.onerror = () => {
+          const fallbackUrl = "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop";
           resolve({
-            url: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop",
-            temp_id: "temp_img_fallback"
+            url: fallbackUrl,
+            image_url: fallbackUrl,
+            temp_id: "temp_img_fallback",
+            public_id: "temp_img_fallback",
+            thumbnail_url: fallbackUrl
           });
         };
         reader.readAsDataURL(file);
