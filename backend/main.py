@@ -89,8 +89,11 @@ async def lifespan(app: FastAPI):
 
 
     # 2. Ensure essential directories exist
-    os.makedirs("uploads", exist_ok=True)
-    os.makedirs(settings.HUGGINGFACE_MODEL_CACHE_DIR, exist_ok=True)
+    try:
+        os.makedirs("uploads", exist_ok=True)
+        os.makedirs(settings.HUGGINGFACE_MODEL_CACHE_DIR, exist_ok=True)
+    except Exception as e:
+        logger.warning(f"Could not create local data directories: {e}")
 
     # 3. Non-blocking ML model loading & AI Agent Scheduler startup
     async def _async_init_services():

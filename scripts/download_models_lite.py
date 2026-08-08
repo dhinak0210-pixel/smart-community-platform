@@ -15,8 +15,14 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-CACHE_DIR = Path(os.getenv("HUGGINGFACE_MODEL_CACHE_DIR", "./ml_models"))
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
+raw_cache_dir = os.getenv("HUGGINGFACE_MODEL_CACHE_DIR", "./ml_models")
+try:
+    CACHE_DIR = Path(raw_cache_dir)
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+except Exception as e:
+    logger.warning(f"Failed to create cache dir at {raw_cache_dir} ({e}). Falling back to /tmp/ml_models")
+    CACHE_DIR = Path("/tmp/ml_models")
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def setup_priority_model() -> bool:
