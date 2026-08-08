@@ -247,22 +247,18 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Mount Routers under both /api & /api/v1
-app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(users_router, prefix="/api/users", tags=["Users"])
-app.include_router(issues_router, prefix="/api", tags=["Issues"])
-app.include_router(upload_router, prefix="/api/upload", tags=["Image Upload"])
-app.include_router(agents_router)
-app.include_router(ai_router)
+# Mount Routers under both /api & /api/v1 for 100% API compatibility across all components
+for prefix in ["/api", "/api/v1"]:
+    app.include_router(auth_router, prefix=f"{prefix}/auth", tags=["Authentication"])
+    app.include_router(users_router, prefix=f"{prefix}/users", tags=["Users"])
+    app.include_router(issues_router, prefix=prefix, tags=["Issues"])
+    app.include_router(upload_router, prefix=f"{prefix}/upload", tags=["Image Upload"])
+    app.include_router(dashboard_router, prefix=prefix, tags=["Dashboard & Analytics"])
+    app.include_router(volunteers_router, prefix=prefix, tags=["Volunteer Tasks"])
+    app.include_router(notifications_router, prefix=prefix, tags=["Notifications"])
+    app.include_router(agents_router, prefix=prefix, tags=["AI Agents"])
+    app.include_router(ai_router, prefix=prefix, tags=["AI & Machine Learning"])
 
-app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication (v1)"])
-app.include_router(users_router, prefix="/api/v1/users", tags=["Users (v1)"])
-app.include_router(issues_router, prefix="/api/v1")
-app.include_router(upload_router, prefix="/api/v1/upload", tags=["Image Upload (v1)"])
-app.include_router(dashboard_router, prefix="/api/v1")
-app.include_router(volunteers_router, prefix="/api/v1")
-app.include_router(notifications_router, prefix="/api/v1")
-app.include_router(agents_router, prefix="/api/v1")
 app.include_router(websocket_router)
 
 

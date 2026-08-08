@@ -18,7 +18,7 @@ from backend.models.issue import Issue
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/ai", tags=["AI & Machine Learning"])
+router = APIRouter(prefix="/ai", tags=["AI & Machine Learning"])
 
 
 # ------------------------------------------------------------------------------

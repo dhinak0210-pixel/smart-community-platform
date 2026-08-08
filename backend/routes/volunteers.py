@@ -77,6 +77,7 @@ def create_volunteer_task(
 
 
 @router.post("/tasks/{task_id}/assign", response_model=VolunteerTaskResponse)
+@router.post("/tasks/{task_id}/claim", response_model=VolunteerTaskResponse)
 def assign_volunteer_task(
     task_id: int,
     current_user: User = Depends(get_current_user),

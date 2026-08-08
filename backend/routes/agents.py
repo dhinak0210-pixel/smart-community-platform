@@ -13,7 +13,7 @@ from backend.agents.agent_scheduler import agent_scheduler
 from backend.agents.community_agent import CommunityAgent
 from backend.utils.auth import get_current_user, require_admin, get_optional_user
 
-router = APIRouter(prefix="/api/agents", tags=["AI Agents"])
+router = APIRouter(prefix="/agents", tags=["AI Agents"])
 
 
 class CitizenChatRequest(BaseModel):
