@@ -116,62 +116,7 @@
     </div>
   </div>
 
-  <!-- ═══════════ AI WORKFLOW & TELEMETRY PANEL ═══════════ -->
-  <div class="container-fluid px-3">
-    <div class="ai-workflow-section">
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-        <div>
-          <h5 class="m-0 text-white fw-bold d-flex align-items-center gap-2">
-            <i class="bi bi-cpu-fill text-info" style="font-size:1.4rem"></i>
-            <span>Smart Community AI Ecosystem &amp; Live Workflow</span>
-            <span class="badge bg-purple text-white px-2 py-1" style="font-size:0.7rem;background:linear-gradient(135deg,#6366f1,#a855f7)">6 ML Models • 5 AI Agents</span>
-          </h5>
-          <span class="text-white-50 small">Autonomous multi-agent triage, deep learning hazard vision &amp; 24/7 vector RAG assistant</span>
-        </div>
-        <div class="ai-telemetry-strip">
-          <span class="agent-pill cursor-pointer" onclick="AIWorkflowController.showAgentDetails('reporter')" title="Click to view live Reporter Agent status"><span class="pulse-dot-green"></span> Reporter Agent</span>
-          <span class="agent-pill cursor-pointer" onclick="AIWorkflowController.showAgentDetails('resolver')" title="Click to view live Resolver Agent status"><span class="pulse-dot-green"></span> Resolver Agent</span>
-          <span class="agent-pill cursor-pointer" onclick="AIWorkflowController.showAgentDetails('analyst')" title="Click to view live Analyst Agent status"><span class="pulse-dot-green"></span> Analyst Agent</span>
-          <span class="agent-pill cursor-pointer" onclick="AIWorkflowController.showAgentDetails('volunteer_coordinator')" title="Click to view live Volunteer Coordinator status"><span class="pulse-dot-green"></span> Volunteer Coordinator</span>
-          <span class="agent-pill cursor-pointer" onclick="AgentChatWidget.toggleWindow(true)" title="Click to open 24/7 AI Chat"><span class="pulse-dot-green"></span> Community RAG Chat</span>
-        </div>
-      </div>
 
-      <!-- 5-STEP PIPELINE DIAGRAM -->
-      <div class="workflow-steps-grid">
-        <div class="workflow-step-card cursor-pointer" onclick="ReportForm.open()" title="Click to launch Citizen Intake Form">
-          <span class="step-number-badge">STEP 1</span>
-          <h6 class="text-white mb-1"><i class="bi bi-megaphone me-1 text-primary"></i> Citizen Intake</h6>
-          <p class="text-white-50 small m-0">Multi-channel report ingestion with Leaflet GPS geotagging &amp; photo uploads.</p>
-          <span class="tech-tag">FastAPI REST + JWT</span>
-        </div>
-        <div class="workflow-step-card cursor-pointer" onclick="AIWorkflowController.openPerceptionSandbox()" title="Click to open AI Perception Sandbox">
-          <span class="step-number-badge">STEP 2</span>
-          <h6 class="text-white mb-1"><i class="bi bi-eye me-1 text-warning"></i> AI Perception</h6>
-          <p class="text-white-50 small m-0">Zero-shot text categorization &amp; YOLOv8 hazard image inspection.</p>
-          <span class="tech-tag">DistilBERT + YOLOv8</span>
-        </div>
-        <div class="workflow-step-card cursor-pointer" onclick="AIWorkflowController.openVectorSearchInspector()" title="Click to open Vector Search Inspector">
-          <span class="step-number-badge">STEP 3</span>
-          <h6 class="text-white mb-1"><i class="bi bi-diagram-3 me-1 text-info"></i> Vector Deduplication</h6>
-          <p class="text-white-50 small m-0">Dense 384d semantic embeddings match duplicates within 500 meters.</p>
-          <span class="tech-tag">MiniLM-L6-v2 + ChromaDB</span>
-        </div>
-        <div class="workflow-step-card cursor-pointer" onclick="AIWorkflowController.openSLATriageMatrix()" title="Click to open SLA Matrix">
-          <span class="step-number-badge">STEP 4</span>
-          <h6 class="text-white mb-1"><i class="bi bi-robot me-1 text-success"></i> Agent SLA Triage</h6>
-          <p class="text-white-50 small m-0">Reporter &amp; Resolver Agents enforce SLAs, assign tasks &amp; notify authorities.</p>
-          <span class="tech-tag">APScheduler + Random Forest</span>
-        </div>
-        <div class="workflow-step-card cursor-pointer" onclick="AgentChatWidget.toggleWindow(true)" title="Click to open 24/7 AI RAG Assistant">
-          <span class="step-number-badge">STEP 5</span>
-          <h6 class="text-white mb-1"><i class="bi bi-chat-dots me-1 text-purple" style="color:#c084fc"></i> 24/7 RAG Assistant</h6>
-          <p class="text-white-50 small m-0">Vector similarity retrieval answers citizen queries &amp; assists resolution.</p>
-          <span class="tech-tag">Groq LLaMA 3.1 RAG</span>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- ═══════════ MAIN CONTENT ═══════════ -->
   <div class="container-fluid px-3">
