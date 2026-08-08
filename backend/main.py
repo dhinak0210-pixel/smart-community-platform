@@ -346,8 +346,14 @@ import os
 from fastapi.staticfiles import StaticFiles
 
 uploads_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
-os.makedirs(uploads_path, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
+try:
+    os.makedirs(uploads_path, exist_ok=True)
+except Exception:
+    uploads_path = "/tmp/uploads"
+    os.makedirs(uploads_path, exist_ok=True)
+
+if os.path.exists(uploads_path):
+    app.mount("/uploads", StaticFiles(directory=uploads_path), name="uploads")
 
 frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 if os.path.exists(frontend_path):

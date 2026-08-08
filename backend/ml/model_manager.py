@@ -197,26 +197,41 @@ class ModelManager:
             logger.info("Loading priority prediction model...")
 
             import pickle
-            cache_dir = Path(settings.HUGGINGFACE_MODEL_CACHE_DIR)
-            cache_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                cache_dir = Path(settings.HUGGINGFACE_MODEL_CACHE_DIR)
+                cache_dir.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                cache_dir = Path("/tmp/ml_models")
+                cache_dir.mkdir(parents=True, exist_ok=True)
+
             model_path = cache_dir / "priority_model.pkl"
+            alt_path = Path("/tmp/ml_models/priority_model.pkl")
 
-            if model_path.exists():
+            loaded_model = None
+            for target_path in [model_path, alt_path]:
+                if target_path.exists():
+                    try:
+                        with open(target_path, "rb") as f:
+                            loaded_model = pickle.load(f)
+                            logger.info(f"Loaded saved priority model from {target_path}")
+                            break
+                    except Exception as ex:
+                        logger.warning(f"Saved priority model load failed at {target_path}: {ex}")
+
+            if not loaded_model:
+                loaded_model = self._create_default_priority_model()
                 try:
-                    with open(model_path, "rb") as f:
-                        self.models["priority_model"] = pickle.load(f)
-                    logger.info("Loaded saved priority model from disk")
-                except Exception as ex:
-                    logger.warning(f"Saved priority model load failed ({ex}), rebuilding default model...")
-                    self.models["priority_model"] = self._create_default_priority_model()
                     with open(model_path, "wb") as f:
-                        pickle.dump(self.models["priority_model"], f)
-            else:
-                self.models["priority_model"] = self._create_default_priority_model()
-                with open(model_path, "wb") as f:
-                    pickle.dump(self.models["priority_model"], f)
-                logger.info("Created and saved default priority model")
+                        pickle.dump(loaded_model, f)
+                    logger.info("Created and saved default priority model")
+                except Exception:
+                    try:
+                        with open(alt_path, "wb") as f:
+                            pickle.dump(loaded_model, f)
+                    except Exception as dump_err:
+                        logger.warning(f"Could not persist priority model to disk: {dump_err}")
 
+            self.models["priority_model"] = loaded_model
             self.model_status["priority_model"] = "loaded"
             self.load_times["priority_model"] = round(time.time() - t, 2)
             return True
