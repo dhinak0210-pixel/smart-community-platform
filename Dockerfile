@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create non-root user
 RUN useradd -m -u 1000 user
 USER user
-ENV PATH="/home/user/.local/bin:$PATH"
+ENV PATH="/home/user/.local/bin:$PATH" \
+    PYTHONPATH="/home/user/app"
 WORKDIR /home/user/app
 
 # Copy dependency specifications first for Docker caching
@@ -38,5 +39,6 @@ RUN python scripts/download_models_lite.py
 EXPOSE 10000
 
 # Execute database migrations and launch FastAPI on $PORT
-CMD ["sh", "-c", "python scripts/migrate.py && uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 1"]
+CMD ["sh", "-c", "PYTHONPATH=. python scripts/migrate.py && uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]
+
 
