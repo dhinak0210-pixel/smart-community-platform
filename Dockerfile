@@ -38,8 +38,9 @@ RUN python scripts/download_models_lite.py
 
 EXPOSE 10000
 
-# Launch FastAPI directly (main.py lifespan automatically calls init_db())
-CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1"]
+# Direct exec form CMD listening on port 10000 for Render Docker Web Service
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "10000", "--workers", "1"]
+
 
 
 
