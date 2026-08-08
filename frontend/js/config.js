@@ -10,12 +10,14 @@ const _isLocalhost = typeof window !== "undefined" && (
   window.location.hostname === "[::1]"
 );
 
-const _isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+const _customApiUrl = typeof window !== "undefined" && (localStorage.getItem("sc_api_url") || window.CUSTOM_API_BASE_URL);
 
 const CONFIG = {
-  API_BASE_URL: _isVercel
-    ? "https://smartcommunity-api.railway.app"
-    : (_isLocalhost ? (window.location.port ? window.location.origin : "http://localhost:8000") : (typeof window !== "undefined" ? window.location.origin : "http://localhost:8000")),
+  API_BASE_URL: _customApiUrl || (
+    _isLocalhost 
+      ? (window.location.port ? window.location.origin : "http://localhost:8000")
+      : (typeof window !== "undefined" ? window.location.origin : "http://localhost:8000")
+  ),
   API_PREFIX: "/api",
 
   ACCESS_TOKEN_KEY: "sc_access_token",
