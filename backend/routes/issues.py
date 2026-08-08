@@ -128,7 +128,23 @@ def format_issue_detail(issue: Issue, db: Session) -> IssueDetail:
         (issue.description[:147] + "...") if len(issue.description) > 150 else issue.description
     )
 
-    image_list = issue.image_urls if issue.image_urls else ([issue.image_url] if issue.image_url else [])
+    primary_image = issue.image_url
+    if not primary_image and issue.image_urls and len(issue.image_urls) > 0:
+        primary_image = issue.image_urls[0]
+
+    category_defaults = {
+        IssueCategory.INFRASTRUCTURE: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.FLOODING: "https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.UTILITIES: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.TRAFFIC: "https://images.unsplash.com/photo-1508873696983-2df5a574e549?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.WASTE: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.SAFETY: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.ENVIRONMENT: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80",
+    }
+    if not primary_image or primary_image == "None":
+        primary_image = category_defaults.get(issue.category, "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80")
+
+    image_list = issue.image_urls if issue.image_urls else [primary_image]
 
     return IssueDetail(
         id=issue.id,
@@ -145,7 +161,7 @@ def format_issue_detail(issue: Issue, db: Session) -> IssueDetail:
         location_city=issue.location_city,
         location_area=issue.location_area,
         location_landmark=issue.location_landmark,
-        image_url=issue.image_url,
+        image_url=primary_image,
         image_urls=image_list,
         ai_suggested_category=issue.ai_suggested_category,
         ai_category_confidence=issue.ai_category_confidence,
@@ -173,6 +189,23 @@ def format_issue_summary(issue: Issue) -> IssueSummary:
     short_desc = issue.short_description or (
         (issue.description[:147] + "...") if len(issue.description) > 150 else issue.description
     )
+
+    primary_image = issue.image_url
+    if not primary_image and issue.image_urls and len(issue.image_urls) > 0:
+        primary_image = issue.image_urls[0]
+
+    category_defaults = {
+        IssueCategory.INFRASTRUCTURE: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.FLOODING: "https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.UTILITIES: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.TRAFFIC: "https://images.unsplash.com/photo-1508873696983-2df5a574e549?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.WASTE: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.SAFETY: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80",
+        IssueCategory.ENVIRONMENT: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80",
+    }
+    if not primary_image or primary_image == "None":
+        primary_image = category_defaults.get(issue.category, "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80")
+
     return IssueSummary(
         id=issue.id,
         uuid=issue.uuid,
@@ -183,7 +216,7 @@ def format_issue_summary(issue: Issue) -> IssueSummary:
         priority=issue.priority,
         location_address=issue.location_address,
         location_city=issue.location_city,
-        image_url=issue.image_url,
+        image_url=primary_image,
         vote_count=issue.vote_count or 0,
         comment_count=issue.comment_count or 0,
         view_count=issue.view_count or 0,
