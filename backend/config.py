@@ -3,8 +3,8 @@
 Loads environment variables from .env file and performs type validation.
 """
 
-from typing import List, Optional
-from pydantic import Field
+from typing import List, Optional, Any
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,10 +19,26 @@ class Settings(BaseSettings):
     DEBUG: bool = Field(default=True, description="Enable or disable debug mode")
     HOST: str = Field(default="0.0.0.0", description="Server host address")
     PORT: int = Field(default=8001, description="Server listening port")
-    CORS_ORIGINS: List[str] = Field(
+    CORS_ORIGINS: Any = Field(
         default=["http://localhost:8001", "http://127.0.0.1:8001", "http://localhost:8000"],
         description="Allowed origins for Cross-Origin Resource Sharing",
     )
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Any) -> List[str]:
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                import json
+                try:
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [i.strip() for i in v.split(",") if i.strip()]
+        elif isinstance(v, list):
+            return v
+        return ["*"]
+
 
     # --------------------------------------------------------------------------
     # Database Settings
