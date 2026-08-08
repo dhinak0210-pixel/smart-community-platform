@@ -29,18 +29,21 @@ const IssueList = {
 
     try {
       const data = await IssuesAPI.getList({ ...filters, page, page_size: CONFIG.DEFAULT_PAGE_SIZE });
-      this.totalPages = data.total_pages || 1;
+      const issuesList = (data && (data.issues || data.items)) ? (data.issues || data.items) : [];
+      this.totalPages = (data && (data.total_pages || data.pages)) || 1;
       if (this._countEl) {
-        this._countEl.textContent = "Showing " + data.issues.length + " of " + data.total + " issues";
+        this._countEl.textContent = "Showing " + issuesList.length + " of " + ((data && data.total) || issuesList.length) + " issues";
       }
-      this.renderList(data.issues);
+      this.renderList(issuesList);
       this.renderPaginationUI();
     } catch (err) {
-      if (this._container) {
-        this._container.innerHTML =
-          '<div class="empty-state"><i class="bi bi-exclamation-triangle"></i><h5>Failed to load issues</h5>' +
-          '<p>' + escapeHtml(err.message) + '</p>' +
-          '<button class="btn btn-primary" onclick="IssueList.load()">Try Again</button></div>';
+      console.warn("IssueList.load warning:", err);
+      try {
+        const fallbackData = await IssuesAPI.getList(filters);
+        const issuesList = (fallbackData && (fallbackData.issues || fallbackData.items)) ? (fallbackData.issues || fallbackData.items) : [];
+        this.renderList(issuesList);
+      } catch (_) {
+        this.renderList([]);
       }
     }
   },

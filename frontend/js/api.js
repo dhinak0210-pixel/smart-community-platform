@@ -440,57 +440,66 @@ const IssuesAPI = {
 
   async getList(filters) {
     try {
-      return await apiRequest("/api/issues/" + buildQueryString(filters));
+      const res = await apiRequest("/api/issues/" + buildQueryString(filters));
+      if (res) {
+        const list = res.issues || res.items || [];
+        res.issues = list;
+        res.items = list;
+      }
+      return res;
     } catch (e) {
       console.warn("IssuesAPI.getList network error, falling back to demo data:", e);
+      const fallbackItems = [
+        {
+          uuid: "demo-issue-1",
+          title: "Severe Pothole & Road Damage on Anna Salai (Mount Road)",
+          description: "Deep road damage near Mount Road Metro station causing traffic delays.",
+          category: "infrastructure",
+          status: "in_progress",
+          priority: "high",
+          location_lat: 13.0604,
+          location_lng: 80.2496,
+          location_city: "Chennai",
+          location_address: "Anna Salai, Mount Road, Chennai",
+          vote_count: 38,
+          created_at: new Date().toISOString()
+        },
+        {
+          uuid: "demo-issue-2",
+          title: "Stormwater Drain Waterlogging in T. Nagar",
+          description: "Water stagnation on Usman Road near Ranganathan Street due to clogged drains.",
+          category: "flooding",
+          status: "reported",
+          priority: "high",
+          location_lat: 13.0418,
+          location_lng: 80.2341,
+          location_city: "Chennai",
+          location_address: "Usman Road, T. Nagar, Chennai",
+          vote_count: 51,
+          created_at: new Date().toISOString()
+        },
+        {
+          uuid: "demo-issue-3",
+          title: "Traffic Light Malfunction on Avinashi Road",
+          description: "Signal light stuck on amber causing severe traffic backup in Coimbatore.",
+          category: "traffic",
+          status: "assigned",
+          priority: "critical",
+          location_lat: 11.0168,
+          location_lng: 76.9558,
+          location_city: "Coimbatore",
+          location_address: "Lakshmi Mills Junction, Avinashi Road, Coimbatore",
+          vote_count: 60,
+          created_at: new Date().toISOString()
+        }
+      ];
       return {
-        items: [
-          {
-            uuid: "demo-issue-1",
-            title: "Severe Pothole on Anna Salai (Mount Road)",
-            description: "Deep road damage near Mount Road Metro station causing traffic delays.",
-            category: "infrastructure",
-            status: "in_progress",
-            urgency_score: 8.5,
-            predicted_priority: "high",
-            latitude: 13.0604,
-            longitude: 80.2496,
-            city: "Chennai",
-            upvotes_count: 14,
-            created_at: new Date().toISOString()
-          },
-          {
-            uuid: "demo-issue-2",
-            title: "Stormwater Drain Blockage in T. Nagar",
-            description: "Water stagnation on Usman Road near Ranganathan Street.",
-            category: "flooding",
-            status: "reported",
-            urgency_score: 6.2,
-            predicted_priority: "medium",
-            latitude: 13.0418,
-            longitude: 80.2341,
-            city: "Chennai",
-            upvotes_count: 8,
-            created_at: new Date().toISOString()
-          },
-          {
-            uuid: "demo-issue-3",
-            title: "Traffic Light Malfunction on Avinashi Road",
-            description: "Signal light stuck on red causing severe traffic backup in Coimbatore.",
-            category: "traffic",
-            status: "under_review",
-            urgency_score: 9.1,
-            predicted_priority: "critical",
-            latitude: 11.0168,
-            longitude: 76.9558,
-            city: "Coimbatore",
-            upvotes_count: 22,
-            created_at: new Date().toISOString()
-          }
-        ],
+        issues: fallbackItems,
+        items: fallbackItems,
         total: 3,
         page: 1,
-        pages: 1
+        pages: 1,
+        total_pages: 1
       };
     }
   },

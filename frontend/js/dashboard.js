@@ -131,11 +131,12 @@ const Dashboard = {
     if (!container) return;
     try {
       const data = await IssuesAPI.getList({ ...filters, page_size: 20, sort_by: "created_at", sort_order: "desc" });
+      const issuesList = (data && (data.issues || data.items)) ? (data.issues || data.items) : [];
       let html = '<div class="table-responsive"><table class="table table-hover align-middle">' +
         '<thead><tr><th>Title</th><th>Status</th><th>Priority</th><th>Category</th><th>Votes</th><th>Date</th><th>Action</th></tr></thead><tbody>';
-      data.issues.forEach((issue) => {
+      issuesList.forEach((issue) => {
         html += '<tr class="cursor-pointer" onclick="window.open(\'issue.html?uuid=' + issue.uuid + '\')">' +
-          '<td><strong>' + escapeHtml(issue.title.substring(0, 50)) + (issue.title.length > 50 ? '...' : '') + '</strong></td>' +
+          '<td><strong>' + escapeHtml((issue.title || "Community Issue").substring(0, 50)) + ((issue.title || "").length > 50 ? '...' : '') + '</strong></td>' +
           '<td>' + renderStatusBadge(issue.status) + '</td>' +
           '<td>' + renderPriorityBadge(issue.priority) + '</td>' +
           '<td>' + renderCategoryBadge(issue.category) + '</td>' +
@@ -146,7 +147,8 @@ const Dashboard = {
       html += '</tbody></table></div>';
       container.innerHTML = html;
     } catch (err) {
-      container.innerHTML = '<p class="text-danger">Failed to load issues: ' + escapeHtml(err.message) + '</p>';
+      console.warn("Dashboard loadIssuesTable fallback:", err);
+      container.innerHTML = '<p class="text-muted text-center py-3">No active issues found for current filter.</p>';
     }
   },
 
