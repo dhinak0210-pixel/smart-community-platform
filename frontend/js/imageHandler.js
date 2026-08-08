@@ -348,15 +348,6 @@ function loadImageProgressively(imgElement, fullUrl) {
 
   const formattedUrl = (typeof formatImageUrl === "function") ? formatImageUrl(fullUrl) : fullUrl;
 
-  if (formattedUrl.includes("cloudinary.com")) {
-    const parts = formattedUrl.split("/upload/");
-    if (parts.length === 2) {
-      const blurUrl = `${parts[0]}/upload/w_20,e_blur:2000/${parts[1]}`;
-      imgElement.src = blurUrl;
-      imgElement.classList.add("loading");
-    }
-  }
-
   const highResImg = new Image();
   highResImg.src = formattedUrl;
   highResImg.onload = () => {
@@ -366,7 +357,11 @@ function loadImageProgressively(imgElement, fullUrl) {
   };
   highResImg.onerror = () => {
     imgElement.classList.remove("loading");
-    imgElement.src = formattedUrl;
+    if (typeof imgElement.onerror === "function") {
+      imgElement.onerror();
+    } else {
+      imgElement.src = "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80";
+    }
   };
 }
 

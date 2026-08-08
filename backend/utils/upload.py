@@ -527,14 +527,45 @@ async def upload_temp_image(
     }
 
 
+def extract_public_id_from_url_or_id(url_or_id: str) -> str:
+    """Extract clean Cloudinary public_id or filename from a URL or raw ID string."""
+    if not url_or_id:
+        return ""
+    val = str(url_or_id).strip()
+    if "cloudinary.com" in val:
+        parts = val.split("/upload/")
+        if len(parts) > 1:
+            after_upload = parts[1]
+            subparts = after_upload.split("/")
+            filtered = []
+            for sp in subparts:
+                if (sp.startswith("v") and sp[1:].isdigit()) or "f_auto" in sp or "q_auto" in sp or "w_" in sp or "h_" in sp or "c_" in sp:
+                    continue
+                filtered.append(sp)
+            clean_path = "/".join(filtered)
+            for ext in [".jpg", ".jpeg", ".png", ".webp"]:
+                if clean_path.endswith(ext):
+                    clean_path = clean_path[:-len(ext)]
+            return clean_path
+    elif val.startswith("/uploads/") or val.startswith("uploads/"):
+        return val.replace("/uploads/", "").replace("uploads/", "")
+
+    for ext in [".jpg", ".jpeg", ".png", ".webp"]:
+        if val.endswith(ext):
+            val = val[:-len(ext)]
+    return val
+
+
 def move_temp_to_issue(
     temp_public_id: str,
     issue_uuid: str,
     image_index: int = 0
 ) -> Dict[str, Any]:
     """Moves uploaded temporary image to permanent issue folder location in Cloudinary or local storage."""
+    clean_id = extract_public_id_from_url_or_id(temp_public_id)
+
     if not (settings.CLOUDINARY_CLOUD_NAME and settings.CLOUDINARY_API_KEY and settings.CLOUDINARY_API_SECRET):
-        filename = temp_public_id
+        filename = clean_id or temp_public_id
         if filename.startswith("/uploads/"):
             filename = filename.replace("/uploads/", "")
         elif filename.startswith("uploads/"):
@@ -549,9 +580,9 @@ def move_temp_to_issue(
     image_name = "primary" if image_index == 0 else f"img_{image_index:03d}"
     new_public_id = f"{CLOUDINARY_BASE_FOLDER}/issues/{issue_uuid}/{image_name}"
 
-    full_temp_public_id = temp_public_id
+    full_temp_public_id = clean_id
     if not full_temp_public_id.startswith(f"{CLOUDINARY_BASE_FOLDER}/temp/"):
-        full_temp_public_id = f"{CLOUDINARY_BASE_FOLDER}/temp/{temp_public_id}"
+        full_temp_public_id = f"{CLOUDINARY_BASE_FOLDER}/temp/{clean_id}"
 
     try:
         result = cloudinary.uploader.rename(
@@ -560,10 +591,13 @@ def move_temp_to_issue(
             overwrite=True
         )
         cloudinary.uploader.add_tag(f"issue:{issue_uuid}", [new_public_id])
-        cloudinary.uploader.remove_tag("temp", [new_public_id])
+        try:
+            cloudinary.uploader.remove_tag("temp", [new_public_id])
+        except Exception:
+            pass
 
         variants = get_image_variants(new_public_id)
-        final_url = result.get("secure_url", variants["original"])
+        final_url = result.get("secure_url") or result.get("url") or variants["original"]
         return {
             "url": final_url,
             "image_url": final_url,
@@ -572,13 +606,13 @@ def move_temp_to_issue(
         }
     except Exception as e:
         logger.error(f"Failed to move temp image '{full_temp_public_id}' to '{new_public_id}': {e}")
-        variants = get_image_variants(full_temp_public_id)
-        fallback_url = variants["original"]
+        # If temp_public_id was already a valid HTTP(S) URL or data URL, fallback to it directly
+        fallback_url = temp_public_id if temp_public_id.startswith(("http://", "https://", "data:")) else get_image_variants(full_temp_public_id)["original"]
         return {
             "url": fallback_url,
             "image_url": fallback_url,
             "public_id": full_temp_public_id,
-            "thumbnail_url": variants["thumbnail"]
+            "thumbnail_url": fallback_url
         }
 
 
