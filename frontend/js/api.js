@@ -447,43 +447,43 @@ const IssuesAPI = {
         items: [
           {
             uuid: "demo-issue-1",
-            title: "Dangerous Pothole on Main Street",
-            description: "Deep pothole near the pedestrian crossing posing safety risk to vehicles.",
+            title: "Severe Pothole on Anna Salai (Mount Road)",
+            description: "Deep road damage near Mount Road Metro station causing traffic delays.",
             category: "infrastructure",
             status: "in_progress",
             urgency_score: 8.5,
             predicted_priority: "high",
-            latitude: 24.7136,
-            longitude: 46.6753,
-            city: "Metropolis",
+            latitude: 13.0604,
+            longitude: 80.2496,
+            city: "Chennai",
             upvotes_count: 14,
             created_at: new Date().toISOString()
           },
           {
             uuid: "demo-issue-2",
-            title: "Broken Streetlight on 5th Avenue",
-            description: "Streetlight flickering and turning off at night.",
-            category: "utilities",
+            title: "Stormwater Drain Blockage in T. Nagar",
+            description: "Water stagnation on Usman Road near Ranganathan Street.",
+            category: "flooding",
             status: "reported",
             urgency_score: 6.2,
             predicted_priority: "medium",
-            latitude: 24.7200,
-            longitude: 46.6800,
-            city: "Metropolis",
+            latitude: 13.0418,
+            longitude: 80.2341,
+            city: "Chennai",
             upvotes_count: 8,
             created_at: new Date().toISOString()
           },
           {
             uuid: "demo-issue-3",
-            title: "Illegal Dumping near Central Park",
-            description: "Construction debris dumped overnight on public walkway.",
-            category: "waste_management",
+            title: "Traffic Light Malfunction on Avinashi Road",
+            description: "Signal light stuck on red causing severe traffic backup in Coimbatore.",
+            category: "traffic",
             status: "under_review",
             urgency_score: 9.1,
             predicted_priority: "critical",
-            latitude: 24.7050,
-            longitude: 46.6650,
-            city: "Metropolis",
+            latitude: 11.0168,
+            longitude: 76.9558,
+            city: "Coimbatore",
             upvotes_count: 22,
             created_at: new Date().toISOString()
           }
@@ -500,9 +500,9 @@ const IssuesAPI = {
       return await apiRequest("/api/issues/map" + buildQueryString(filters));
     } catch (e) {
       return [
-        { uuid: "demo-issue-1", title: "Main St Pothole", category: "infrastructure", predicted_priority: "high", latitude: 24.7136, longitude: 46.6753 },
-        { uuid: "demo-issue-2", title: "5th Ave Streetlight", category: "utilities", predicted_priority: "medium", latitude: 24.7200, longitude: 46.6800 },
-        { uuid: "demo-issue-3", title: "Park Dumping", category: "waste_management", predicted_priority: "critical", latitude: 24.7050, longitude: 46.6650 }
+        { uuid: "demo-issue-1", title: "Anna Salai Pothole", category: "infrastructure", predicted_priority: "high", latitude: 13.0604, longitude: 80.2496 },
+        { uuid: "demo-issue-2", title: "T. Nagar Drain", category: "flooding", predicted_priority: "medium", latitude: 13.0418, longitude: 80.2341 },
+        { uuid: "demo-issue-3", title: "Avinashi Rd Signal", category: "traffic", predicted_priority: "critical", latitude: 11.0168, longitude: 76.9558 }
       ];
     }
   },
@@ -543,8 +543,8 @@ const IssuesAPI = {
         status: "in_progress",
         urgency_score: 7.5,
         predicted_priority: "high",
-        latitude: 24.7136,
-        longitude: 46.6753,
+        latitude: 13.0827,
+        longitude: 80.2707,
         upvotes_count: 10,
         comments: [],
         created_at: new Date().toISOString()
