@@ -60,17 +60,16 @@ class ModelManager:
         results: dict[str, bool] = {}
 
         if getattr(settings, "ML_MODE", "full") == "lightweight":
-            logger.info("⚡ ML_MODE=lightweight: Skipping heavy local Hugging Face and ChromaDB models for instant 512MB RAM startup.")
+            logger.info("⚡ ML_MODE=lightweight: Skipping heavy local Hugging Face PyTorch models for instant 512MB RAM startup.")
             self.model_status["text_classifier"] = "lightweight_mode"
             self.model_status["yolo"] = "lightweight_mode"
             self.model_status["sentence_transformer"] = "lightweight_mode"
-            self.model_status["chroma_db"] = "lightweight_mode"
             results["text_classifier"] = False
             results["yolo"] = False
             results["sentence_transformer"] = False
-            results["chroma_db"] = False
             results["priority_model"] = self._load_priority_model()
             results["groq_client"] = self._load_groq_client()
+            results["chroma_db"] = self._load_chroma_db()
 
         else:
             results["text_classifier"] = self._load_text_classifier()

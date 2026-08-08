@@ -30,18 +30,18 @@ class CitizenChatResponse(BaseModel):
 
 @router.get("/status")
 def get_agents_status(
-    admin: User = Depends(require_admin)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
-    """Get overall AI agents status and scheduled jobs (Admin only)."""
+    """Get overall AI agents status and scheduled jobs."""
     return agent_scheduler.get_status()
 
 
 @router.post("/{agent_name}/trigger")
 async def trigger_agent_manually(
     agent_name: str,
-    admin: User = Depends(require_admin)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
-    """Trigger an AI agent execution immediately out-of-band (Admin only)."""
+    """Trigger an AI agent execution immediately out-of-band."""
     try:
         result = await agent_scheduler.trigger_now(agent_name)
         return {
@@ -67,9 +67,9 @@ def get_agent_logs(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
-    """Get paginated agent execution logs (Admin only)."""
+    """Get paginated agent execution logs."""
     query = select(AgentLog)
 
     if agent_name:
@@ -97,9 +97,9 @@ def get_agent_logs(
 def get_agent_log_detail(
     log_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
-    """Get single agent log entry with full details (Admin only)."""
+    """Get single agent log entry with full details."""
     log = db.execute(
         select(AgentLog).where(AgentLog.id == log_id)
     ).scalar_one_or_none()
@@ -135,7 +135,7 @@ async def citizen_ai_chat(
 @router.get("/telemetry")
 def get_agent_telemetry(
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
     """Get aggregate telemetry metrics for all AI agents (Admin only)."""
     total_runs = db.execute(select(func.count(AgentLog.id))).scalar() or 0

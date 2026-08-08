@@ -110,14 +110,30 @@ class AgentScheduler:
             logger.info("APScheduler shut down")
 
     async def trigger_now(self, agent_name: str) -> dict:
-        """Trigger an agent run immediately out-of-band.
-        Used by admin API endpoints.
-        """
-        if agent_name not in self.agents:
-            raise ValueError(f"Unknown agent: '{agent_name}'. Available: {list(self.agents.keys())}")
+        """Trigger an agent run immediately out-of-band."""
+        key = str(agent_name).lower().strip().replace(" ", "_").replace("-", "_")
+        if key.endswith("_agent"):
+            key = key[:-6]
+        
+        alias_map = {
+            "intake_coordinator": "reporter",
+            "intake": "reporter",
+            "case_manager": "resolver",
+            "case": "resolver",
+            "data_scientist": "analyst",
+            "hr_manager": "volunteer_coordinator",
+            "volunteer": "volunteer_coordinator",
+            "volunteer_agent": "volunteer_coordinator",
+            "citizen_assistant": "community",
+            "rag": "community",
+        }
+        
+        target_key = alias_map.get(key, key)
+        if target_key not in self.agents:
+            raise ValueError(f"Unknown agent: '{agent_name}'. Available agents: {list(self.agents.keys())}")
 
-        agent = self.agents[agent_name]
-        logger.info(f"Manual trigger requested for agent: {agent_name}")
+        agent = self.agents[target_key]
+        logger.info(f"Manual trigger requested for agent: {target_key}")
         result = await agent.run()
         return result
 
@@ -173,11 +189,17 @@ class AgentScheduler:
             }
         ]
 
+        from backend.ml.model_manager import model_manager
+        chroma_info = model_manager.get_status().get("models", {}).get("chroma_db", {})
+        chroma_status = chroma_info.get("status", "not_attempted")
+
         return {
             "scheduler_running": self.scheduler.running,
             "total_agents": len(self.agents),
             "active_jobs": jobs_info,
-            "agents": agent_definitions
+            "agents": agent_definitions,
+            "chromadb_status": chroma_status,
+            "chromadb_connected": chroma_status in ["loaded", "lightweight_mode"]
         }
 
 
