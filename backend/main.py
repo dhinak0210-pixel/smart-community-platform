@@ -73,16 +73,20 @@ async def lifespan(app: FastAPI):
     logger.info(f"Debug mode: {settings.DEBUG}")
     logger.info("=" * 50)
 
-    # 1. Check database connectivity & initialize tables
-    if check_db_connection():
-        logger.info("✅ Database connected successfully.")
-        try:
-            init_db()
-            logger.info("✅ Database tables verified.")
-        except Exception as e:
-            logger.error(f"Error during init_db: {e}")
-    else:
-        logger.warning("❌ Database connection failed on startup. Application operating in degraded mode.")
+    # 1. Non-blocking database connectivity check & table initialization
+    async def _async_init_db():
+        if await asyncio.to_thread(check_db_connection):
+            logger.info("✅ Database connected successfully.")
+            try:
+                await asyncio.to_thread(init_db)
+                logger.info("✅ Database tables verified.")
+            except Exception as e:
+                logger.error(f"Error during init_db: {e}")
+        else:
+            logger.warning("❌ Database connection failed on startup. Application operating in degraded mode.")
+
+    asyncio.create_task(_async_init_db())
+
 
     # 2. Ensure essential directories exist
     os.makedirs("uploads", exist_ok=True)
