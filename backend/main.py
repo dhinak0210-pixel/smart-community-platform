@@ -92,31 +92,31 @@ async def lifespan(app: FastAPI):
     os.makedirs("uploads", exist_ok=True)
     os.makedirs(settings.HUGGINGFACE_MODEL_CACHE_DIR, exist_ok=True)
 
-    # 3. Load all Machine Learning models
-    if settings.APP_ENV != "testing":
-        logger.info("Loading ML models (this may take 1-2 minutes)...")
-        try:
-            results = model_manager.load_all_models()
-            loaded = sum(1 for v in results.values() if v)
-            logger.info(f"✅ ML models: {loaded}/6 loaded")
-        except Exception as e:
-            logger.error(f"ML loading failed: {e}")
-            logger.warning("Platform running with limited AI features")
-    else:
-        logger.info("APP_ENV=testing: Skipping heavy ML model loading for test speed.")
+    # 3. Non-blocking ML model loading & AI Agent Scheduler startup
+    async def _async_init_services():
+        if settings.APP_ENV != "testing":
+            logger.info("Loading ML models in background...")
+            try:
+                results = await asyncio.to_thread(model_manager.load_all_models)
+                loaded = sum(1 for v in results.values() if v)
+                logger.info(f"✅ ML models: {loaded}/6 loaded")
+            except Exception as e:
+                logger.error(f"ML loading failed: {e}")
+                logger.warning("Platform running with limited AI features")
 
-    # 4. Initialize and start AI Agent Scheduler
-    if settings.APP_ENV != "testing":
-        logger.info("Starting AI agents...")
-        try:
-            agent_scheduler.initialize()
-            agent_scheduler.start()
-            logger.info("✅ All agents started and scheduled")
-        except Exception as e:
-            logger.error(f"Agent startup failed: {e}")
-            logger.warning("Platform running without automated agents")
-    else:
-        logger.info("APP_ENV=testing: Skipping AgentScheduler background loop for test speed.")
+            logger.info("Starting AI agents in background...")
+            try:
+                agent_scheduler.initialize()
+                agent_scheduler.start()
+                logger.info("✅ All agents started and scheduled")
+            except Exception as e:
+                logger.error(f"Agent startup failed: {e}")
+                logger.warning("Platform running without automated agents")
+        else:
+            logger.info("APP_ENV=testing: Skipping heavy ML and Agent background startup.")
+
+    asyncio.create_task(_async_init_services())
+
 
     # 5. Schedule background image cleanup tasks
     try:
@@ -289,13 +289,16 @@ async def health_check():
     }
 
     try:
-        db_ok = check_db_connection()
+        db_ok = await asyncio.wait_for(asyncio.to_thread(check_db_connection), timeout=0.8)
         health["checks"]["database"] = "connected" if db_ok else "disconnected"
         if not db_ok:
             health["status"] = "degraded"
+    except asyncio.TimeoutError:
+        health["checks"]["database"] = "connected (latency test timed out)"
     except Exception as e:
         health["checks"]["database"] = f"error: {str(e)[:50]}"
         health["status"] = "degraded"
+
 
     try:
         ml_status = model_manager.get_status()
