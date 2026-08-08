@@ -58,14 +58,28 @@ class ModelManager:
         start = time.time()
 
         results: dict[str, bool] = {}
-        results["text_classifier"] = self._load_text_classifier()
-        results["yolo"] = self._load_yolo()
-        results["sentence_transformer"] = self._load_sentence_transformer()
-        results["priority_model"] = self._load_priority_model()
-        results["groq_client"] = self._load_groq_client()
-        results["chroma_db"] = self._load_chroma_db()
+
+        if getattr(settings, "ML_MODE", "full") == "lightweight":
+            logger.info("⚡ ML_MODE=lightweight: Skipping heavy local Hugging Face models for instant startup.")
+            self.model_status["text_classifier"] = "lightweight_mode"
+            self.model_status["yolo"] = "lightweight_mode"
+            self.model_status["sentence_transformer"] = "lightweight_mode"
+            results["text_classifier"] = False
+            results["yolo"] = False
+            results["sentence_transformer"] = False
+            results["priority_model"] = self._load_priority_model()
+            results["groq_client"] = self._load_groq_client()
+            results["chroma_db"] = self._load_chroma_db()
+        else:
+            results["text_classifier"] = self._load_text_classifier()
+            results["yolo"] = self._load_yolo()
+            results["sentence_transformer"] = self._load_sentence_transformer()
+            results["priority_model"] = self._load_priority_model()
+            results["groq_client"] = self._load_groq_client()
+            results["chroma_db"] = self._load_chroma_db()
 
         total_time = round(time.time() - start, 2)
+
         loaded = sum(1 for v in results.values() if v)
         total = len(results)
 
