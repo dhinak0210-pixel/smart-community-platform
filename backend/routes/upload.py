@@ -29,6 +29,9 @@ class ImageDeleteRequest(BaseModel):
 
 
 @router.post("/temp-image", status_code=status.HTTP_201_CREATED)
+@router.post("/temp", status_code=status.HTTP_201_CREATED)
+@router.post("/image", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def upload_temporary_image(
     file: UploadFile = File(...),
     session_id: Optional[str] = Form(None),
