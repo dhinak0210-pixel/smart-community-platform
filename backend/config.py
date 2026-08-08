@@ -83,6 +83,7 @@ class Settings(BaseSettings):
     # --------------------------------------------------------------------------
     # AI & External APIs (Phase 2/3)
     # --------------------------------------------------------------------------
+    ML_MODE: str = Field(default="lightweight", description="ML execution mode: 'lightweight' or 'full'")
     GROQ_API_KEY: Optional[str] = Field(default=None, description="Groq API key for LLM services")
     HUGGINGFACE_MODEL_CACHE_DIR: str = Field(default="./ml_models", description="Local cache directory for HuggingFace models")
     YOLO_MODEL_PATH: str = Field(default="./ml_models/yolov8n.pt", description="Path to YOLOv8 model weights")
