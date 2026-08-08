@@ -262,8 +262,8 @@ for prefix in ["/api", "/api/v1"]:
 app.include_router(websocket_router)
 
 
-@app.get("/", tags=["Health Check"])
-def root():
+@app.get("/info", tags=["Health Check"])
+def root_info():
     """Basic application info endpoint."""
     return {
         "app": settings.APP_NAME,
