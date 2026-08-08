@@ -1,0 +1,48 @@
+# ═════════════════════════════════════════════════════════════
+# SMART COMMUNITY PLATFORM - LIGHTWEIGHT FREE TIER REQUIREMENTS
+# Total install size: ~200MB (RAM usage: ~200MB, fits in 512MB RAM)
+# Excludes PyTorch (~800MB), Transformers (~500MB), Ultralytics (~100MB)
+# Uses Groq API & Hugging Face Inference API for AI inference.
+# ═════════════════════════════════════════════════════════════
+
+# CORE FRAMEWORK
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+aiofiles==23.2.1
+httpx==0.26.0
+
+# DATABASE
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+alembic==1.13.1
+
+# AUTHENTICATION AND CONFIGURATION
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+
+# IMAGE VALIDATION & CLOUDINARY
+cloudinary==1.36.0
+Pillow==10.2.0
+
+# EMAIL
+resend==0.7.0
+emails==0.6
+
+# LIGHTWEIGHT AI & VECTOR SEARCH
+scikit-learn==1.3.2
+numpy==1.26.0
+scipy==1.11.4
+groq==0.4.2
+chromadb==0.4.22
+
+# TASK SCHEDULING
+apscheduler==3.10.4
+
+# UTILITIES
+python-slugify==8.0.3
+click==8.1.7

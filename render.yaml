@@ -1,23 +1,67 @@
 services:
   - type: web
-    name: smart-community-backend
+    name: smart-community-api
     runtime: python
-    buildCommand: "pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt"
-    startCommand: "python scripts/migrate.py && uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    region: oregon
+    plan: free
+
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements-free.txt
+      python scripts/download_models_lite.py
+
+    startCommand: >
+      uvicorn backend.main:app
+      --host 0.0.0.0
+      --port $PORT
+      --workers 1
+      --log-level info
+      --timeout-keep-alive 75
+
+    healthCheckPath: /health
+
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.0
-      - key: APP_ENV
+        value: 3.11.0
+      - key: ENVIRONMENT
         value: production
       - key: DEBUG
-        value: "false"
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ML_DEVICE
+        value: cpu
+      - key: ML_MODE
+        value: lightweight
+      - key: HUGGINGFACE_MODEL_CACHE_DIR
+        value: /opt/render/project/ml_models
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "1"
+
+      - key: DATABASE_URL
+        sync: false
       - key: SECRET_KEY
-        generateValue: true
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
       - key: GROQ_API_KEY
         sync: false
-      - key: DATABASE_URL
+      - key: RESEND_API_KEY
         sync: false
       - key: FRONTEND_URL
         sync: false
       - key: CORS_ORIGINS
         sync: false
+
+    autoDeploy: true
+
+    disk:
+      name: ml-models-cache
+      mountPath: /opt/render/project/ml_models
+      sizeGB: 1
