@@ -215,16 +215,21 @@ const ImageGallery = {
       return;
     }
 
-    const currentUrl = this.images[this.currentIndex] || this.images[0];
+    const rawUrl = this.images[this.currentIndex] || this.images[0];
+    const currentUrl = (typeof formatImageUrl === "function") ? formatImageUrl(rawUrl) : rawUrl;
     const editable = !!this.options.editable;
 
-    let thumbsHtml = this.images.map((url, idx) => `
+    let thumbsHtml = this.images.map((url, idx) => {
+      const formattedThumbUrl = (typeof formatImageUrl === "function") ? formatImageUrl(url) : url;
+      return `
       <div class="position-relative d-inline-block">
-        <img src="${url}" class="gallery-thumb ${idx === this.currentIndex ? 'active' : ''}" 
-             alt="Thumbnail ${idx + 1}" onclick="ImageGallery.showImage(${idx})">
+        <img src="${formattedThumbUrl}" class="gallery-thumb ${idx === this.currentIndex ? 'active' : ''}" 
+             alt="Thumbnail ${idx + 1}" onclick="ImageGallery.showImage(${idx})"
+             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=400&q=80'">
         ${editable ? `<button class="btn btn-danger btn-sm gallery-thumb-del" onclick="ImageGallery.removeImageButton('${url}', event)"><i class="bi bi-x"></i></button>` : ''}
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     if (editable && this.images.length < (CONFIG.MAX_IMAGES_PER_ISSUE || 5)) {
       thumbsHtml += `
@@ -239,7 +244,8 @@ const ImageGallery = {
       <div class="issue-gallery">
         <div class="position-relative">
           <img src="${currentUrl}" alt="Issue photo" class="gallery-primary" id="gallery-primary-img" 
-               onclick="ImageGallery.openFullscreen('${currentUrl}')">
+               onclick="ImageGallery.openFullscreen('${currentUrl}')"
+               onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80'">
           <span class="gallery-counter">${this.currentIndex + 1} / ${this.images.length}</span>
         </div>
         <div class="gallery-thumbnails mt-2">
@@ -340,8 +346,10 @@ const ImageGallery = {
 function loadImageProgressively(imgElement, fullUrl) {
   if (!imgElement || !fullUrl) return;
 
-  if (fullUrl.includes("cloudinary.com")) {
-    const parts = fullUrl.split("/upload/");
+  const formattedUrl = (typeof formatImageUrl === "function") ? formatImageUrl(fullUrl) : fullUrl;
+
+  if (formattedUrl.includes("cloudinary.com")) {
+    const parts = formattedUrl.split("/upload/");
     if (parts.length === 2) {
       const blurUrl = `${parts[0]}/upload/w_20,e_blur:2000/${parts[1]}`;
       imgElement.src = blurUrl;
@@ -350,11 +358,15 @@ function loadImageProgressively(imgElement, fullUrl) {
   }
 
   const highResImg = new Image();
-  highResImg.src = fullUrl;
+  highResImg.src = formattedUrl;
   highResImg.onload = () => {
-    imgElement.src = fullUrl;
+    imgElement.src = formattedUrl;
     imgElement.classList.remove("loading");
     imgElement.classList.add("loaded");
+  };
+  highResImg.onerror = () => {
+    imgElement.classList.remove("loading");
+    imgElement.src = formattedUrl;
   };
 }
 

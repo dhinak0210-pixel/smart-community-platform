@@ -198,25 +198,22 @@ def init_db() -> None:
         tables = list(Base.metadata.tables.keys())
         logger.info(f"Database initialized successfully. Tables present/created: {', '.join(tables)}")
 
-        # Auto-seed Tamil Nadu demo issues if DB is empty or has < 5 issues
+        # Auto-seed Tamil Nadu demo issues if DB is empty or update missing image_urls
         db = SessionLocal()
         try:
-            issue_count = db.query(Issue).count()
-            if issue_count < 5:
-                logger.info(f"Auto-seeding Tamil Nadu demo issues (current count: {issue_count})...")
-                citizen = db.query(User).filter(User.role == UserRole.CITIZEN).first()
-                if not citizen:
-                    citizen = User(
-                        name="Citizen TamilNadu",
-                        email="citizen1@demo.com",
-                        password_hash=hash_password("DemoPass123!"),
-                        role=UserRole.CITIZEN,
-                        is_active=True,
-                        is_verified=True,
-                        location_city="Chennai"
-                    )
-                    db.add(citizen)
-                    db.commit()
+            citizen = db.query(User).filter(User.role == UserRole.CITIZEN).first()
+            if not citizen:
+                citizen = User(
+                    name="Citizen TamilNadu",
+                    email="citizen1@demo.com",
+                    password_hash=hash_password("DemoPass123!"),
+                    role=UserRole.CITIZEN,
+                    is_active=True,
+                    is_verified=True,
+                    location_city="Chennai"
+                )
+                db.add(citizen)
+                db.commit()
 
                 tn_demo_issues = [
                     {
@@ -225,7 +222,8 @@ def init_db() -> None:
                         "category": IssueCategory.INFRASTRUCTURE,
                         "status": IssueStatus.IN_PROGRESS,
                         "priority": IssuePriority.HIGH,
-                        "lat": 13.0604, "lng": 80.2496, "city": "Chennai", "area": "Anna Salai", "address": "Anna Salai, Mount Road, Chennai"
+                        "lat": 13.0604, "lng": 80.2496, "city": "Chennai", "area": "Anna Salai", "address": "Anna Salai, Mount Road, Chennai",
+                        "image_url": "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Stormwater Drain Waterlogging in T. Nagar",
@@ -233,7 +231,8 @@ def init_db() -> None:
                         "category": IssueCategory.FLOODING,
                         "status": IssueStatus.REPORTED,
                         "priority": IssuePriority.HIGH,
-                        "lat": 13.0418, "lng": 80.2341, "city": "Chennai", "area": "T. Nagar", "address": "Usman Road, T. Nagar, Chennai"
+                        "lat": 13.0418, "lng": 80.2341, "city": "Chennai", "area": "T. Nagar", "address": "Usman Road, T. Nagar, Chennai",
+                        "image_url": "https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Broken Streetlights on OMR IT Corridor (Kandanchavadi)",
@@ -241,7 +240,8 @@ def init_db() -> None:
                         "category": IssueCategory.UTILITIES,
                         "status": IssueStatus.ACKNOWLEDGED,
                         "priority": IssuePriority.MEDIUM,
-                        "lat": 12.9642, "lng": 80.2471, "city": "Chennai", "area": "OMR Corridor", "address": "Kandanchavadi, OMR Road, Chennai"
+                        "lat": 12.9642, "lng": 80.2471, "city": "Chennai", "area": "OMR Corridor", "address": "Kandanchavadi, OMR Road, Chennai",
+                        "image_url": "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Traffic Light Malfunction on Avinashi Road",
@@ -249,7 +249,8 @@ def init_db() -> None:
                         "category": IssueCategory.TRAFFIC,
                         "status": IssueStatus.ASSIGNED,
                         "priority": IssuePriority.CRITICAL,
-                        "lat": 11.0168, "lng": 76.9558, "city": "Coimbatore", "area": "Peelamedu", "address": "Lakshmi Mills Junction, Avinashi Road, Coimbatore"
+                        "lat": 11.0168, "lng": 76.9558, "city": "Coimbatore", "area": "Peelamedu", "address": "Lakshmi Mills Junction, Avinashi Road, Coimbatore",
+                        "image_url": "https://images.unsplash.com/photo-1508873696983-2df5a574e549?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Garbage Dumping near Koyambedu Bus Terminus",
@@ -257,7 +258,8 @@ def init_db() -> None:
                         "category": IssueCategory.WASTE,
                         "status": IssueStatus.RESOLVED,
                         "priority": IssuePriority.MEDIUM,
-                        "lat": 13.0694, "lng": 80.1948, "city": "Chennai", "area": "Koyambedu", "address": "CMBT Outer Ring Road, Koyambedu, Chennai"
+                        "lat": 13.0694, "lng": 80.1948, "city": "Chennai", "area": "Koyambedu", "address": "CMBT Outer Ring Road, Koyambedu, Chennai",
+                        "image_url": "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Waste Dump near Meenakshi Amman Temple Perimeter",
@@ -265,7 +267,8 @@ def init_db() -> None:
                         "category": IssueCategory.WASTE,
                         "status": IssueStatus.IN_PROGRESS,
                         "priority": IssuePriority.HIGH,
-                        "lat": 9.9195, "lng": 78.1193, "city": "Madurai", "area": "Town Hall", "address": "East Chitrai Street, Madurai"
+                        "lat": 9.9195, "lng": 78.1193, "city": "Madurai", "area": "Town Hall", "address": "East Chitrai Street, Madurai",
+                        "image_url": "https://images.unsplash.com/photo-1611284446314-60a55ac7deab?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Open Canal & Damaged Footpath near Chathiram Bus Stand",
@@ -273,7 +276,8 @@ def init_db() -> None:
                         "category": IssueCategory.SAFETY,
                         "status": IssueStatus.UNDER_REVIEW,
                         "priority": IssuePriority.CRITICAL,
-                        "lat": 10.8272, "lng": 78.6946, "city": "Tiruchirappalli", "area": "Chathiram", "address": "Chathiram Bus Stand Rd, Trichy"
+                        "lat": 10.8272, "lng": 78.6946, "city": "Tiruchirappalli", "area": "Chathiram", "address": "Chathiram Bus Stand Rd, Trichy",
+                        "image_url": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=800&q=80"
                     },
                     {
                         "title": "Fallen Tree Branch at Five Roads Junction",
@@ -281,12 +285,14 @@ def init_db() -> None:
                         "category": IssueCategory.ENVIRONMENT,
                         "status": IssueStatus.ACKNOWLEDGED,
                         "priority": IssuePriority.HIGH,
-                        "lat": 11.6643, "lng": 78.1460, "city": "Salem", "area": "Five Roads", "address": "Five Roads Junction, Salem"
+                        "lat": 11.6643, "lng": 78.1460, "city": "Salem", "area": "Five Roads", "address": "Five Roads Junction, Salem",
+                        "image_url": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=800&q=80"
                     }
                 ]
 
                 for data in tn_demo_issues:
-                    if not db.query(Issue).filter(Issue.title == data["title"]).first():
+                    existing = db.query(Issue).filter(Issue.title == data["title"]).first()
+                    if not existing:
                         iss = Issue(
                             title=data["title"],
                             description=data["description"],
@@ -299,6 +305,8 @@ def init_db() -> None:
                             location_address=data["address"],
                             location_city=data["city"],
                             location_area=data["area"],
+                            image_url=data.get("image_url"),
+                            image_urls=[data.get("image_url")] if data.get("image_url") else [],
                             reporter_id=citizen.id,
                             ai_processed=True,
                             vote_count=random.randint(15, 60),
@@ -307,6 +315,9 @@ def init_db() -> None:
                             created_at=datetime.utcnow() - timedelta(days=random.randint(1, 10))
                         )
                         db.add(iss)
+                    elif not existing.image_url:
+                        existing.image_url = data.get("image_url")
+                        existing.image_urls = [data.get("image_url")] if data.get("image_url") else []
                 db.commit()
                 logger.info("✅ Auto-seeded Tamil Nadu demo issues successfully.")
         finally:

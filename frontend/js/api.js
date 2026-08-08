@@ -461,6 +461,8 @@ const IssuesAPI = {
           location_lng: 80.2496,
           location_city: "Chennai",
           location_address: "Anna Salai, Mount Road, Chennai",
+          image_url: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80",
+          image_urls: ["https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80"],
           vote_count: 38,
           created_at: new Date().toISOString()
         },
@@ -475,6 +477,8 @@ const IssuesAPI = {
           location_lng: 80.2341,
           location_city: "Chennai",
           location_address: "Usman Road, T. Nagar, Chennai",
+          image_url: "https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80",
+          image_urls: ["https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80"],
           vote_count: 51,
           created_at: new Date().toISOString()
         },
@@ -489,6 +493,8 @@ const IssuesAPI = {
           location_lng: 76.9558,
           location_city: "Coimbatore",
           location_address: "Lakshmi Mills Junction, Avinashi Road, Coimbatore",
+          image_url: "https://images.unsplash.com/photo-1508873696983-2df5a574e549?auto=format&fit=crop&w=800&q=80",
+          image_urls: ["https://images.unsplash.com/photo-1508873696983-2df5a574e549?auto=format&fit=crop&w=800&q=80"],
           vote_count: 60,
           created_at: new Date().toISOString()
         }
