@@ -239,7 +239,7 @@ class TestHealthCheckJourney:
     """Test platform health endpoints."""
 
     def test_root_endpoint(self, client):
-        response = client.get("/")
+        response = client.get("/info")
         assert_success(response, 200)
         data = get_json(response)
         assert "app" in data

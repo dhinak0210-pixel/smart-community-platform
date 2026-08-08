@@ -360,20 +360,42 @@ const IssuesAPI = {
         thumbnail_url: res.thumbnail_url || res.url || res.image_url
       };
     } catch (e) {
-      console.warn("IssuesAPI.uploadImage backend upload failed, converting to local data URL:", e);
+      console.warn("IssuesAPI.uploadImage backend upload failed, converting to compressed local data URL:", e);
       return new Promise((resolve) => {
+        const img = new Image();
         const reader = new FileReader();
-        reader.onload = () => {
-          const dataUrl = reader.result;
+        reader.onload = (evt) => {
+          img.src = evt.target.result;
+        };
+        img.onload = () => {
+          const maxW = 800;
+          const maxH = 600;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxW || h > maxH) {
+            if (w / h > maxW / maxH) {
+              h = Math.round((h * maxW) / w);
+              w = maxW;
+            } else {
+              w = Math.round((w * maxH) / h);
+              h = maxH;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
           resolve({
-            url: dataUrl,
-            image_url: dataUrl,
+            url: compressedDataUrl,
+            image_url: compressedDataUrl,
             temp_id: "temp_img_" + Date.now(),
             public_id: "temp_img_" + Date.now(),
-            thumbnail_url: dataUrl
+            thumbnail_url: compressedDataUrl
           });
         };
-        reader.onerror = () => {
+        img.onerror = reader.onerror = () => {
           const fallbackUrl = "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop";
           resolve({
             url: fallbackUrl,

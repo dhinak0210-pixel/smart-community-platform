@@ -39,6 +39,20 @@ MAX_IMAGES_PER_ISSUE = settings.MAX_IMAGES_PER_ISSUE
 CLOUDINARY_BASE_FOLDER = "smart-community"
 
 
+def get_uploads_dir() -> str:
+    """Return path to uploads directory with fallback to /tmp/uploads if permissions are restricted."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    dir_path = os.path.join(base_dir, "uploads")
+    try:
+        os.makedirs(dir_path, exist_ok=True)
+        return dir_path
+    except Exception:
+        fallback = "/tmp/uploads"
+        os.makedirs(fallback, exist_ok=True)
+        return fallback
+
+
+
 async def validate_image_file(
     file: UploadFile,
     max_size_mb: Optional[float] = None
@@ -268,16 +282,12 @@ async def upload_issue_image(
                 "small_url": small_url,
             }
         except Exception as e:
-            logger.error(f"Cloudinary upload failed: {e}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Image upload failed. Please try again in a moment."
-            )
+            logger.warning(f"Cloudinary upload failed, falling back to local storage: {e}")
 
-    # Local fallback storage if Cloudinary credentials are not present
-    os.makedirs("uploads", exist_ok=True)
+    # Local fallback storage if Cloudinary credentials are not present or upload failed
+    uploads_dir = get_uploads_dir()
     filename = f"{issue_uuid}_{image_name}.jpg"
-    filepath = os.path.join("uploads", filename)
+    filepath = os.path.join(uploads_dir, filename)
     async with aiofiles.open(filepath, "wb") as f:
         await f.write(processed_bytes)
 
@@ -343,16 +353,12 @@ async def upload_user_avatar(
                 "public_id": result["public_id"]
             }
         except Exception as e:
-            logger.error(f"Cloudinary avatar upload failed: {e}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Avatar upload failed. Please try again."
-            )
+            logger.warning(f"Cloudinary avatar upload failed, falling back to local storage: {e}")
 
     # Local fallback
-    os.makedirs("uploads", exist_ok=True)
+    uploads_dir = get_uploads_dir()
     filename = f"avatar_{user_uuid}.jpg"
-    filepath = os.path.join("uploads", filename)
+    filepath = os.path.join(uploads_dir, filename)
     async with aiofiles.open(filepath, "wb") as f:
         await f.write(processed_bytes)
 
@@ -502,15 +508,11 @@ async def upload_temp_image(
                 "expires_in": "24 hours"
             }
         except Exception as e:
-            logger.error(f"Failed to upload temp image to Cloudinary: {e}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Temp image upload failed. Please try again."
-            )
+            logger.warning(f"Failed to upload temp image to Cloudinary, falling back to local storage: {e}")
 
-    os.makedirs("uploads", exist_ok=True)
+    uploads_dir = get_uploads_dir()
     filename = f"{temp_id}.jpg"
-    filepath = os.path.join("uploads", filename)
+    filepath = os.path.join(uploads_dir, filename)
     async with aiofiles.open(filepath, "wb") as f:
         await f.write(processed_bytes)
 

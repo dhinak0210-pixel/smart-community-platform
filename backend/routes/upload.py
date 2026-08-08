@@ -11,7 +11,7 @@ from sqlalchemy import select
 from backend.database import get_db
 from backend.models.user import User, UserRole
 from backend.models.issue import Issue
-from backend.utils.auth import get_current_user, require_role
+from backend.utils.auth import get_current_user, require_role, get_optional_user
 from backend.utils.upload import (
     upload_temp_image,
     upload_user_avatar,
@@ -32,10 +32,11 @@ class ImageDeleteRequest(BaseModel):
 async def upload_temporary_image(
     file: UploadFile = File(...),
     session_id: Optional[str] = Form(None),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
     """Uploads an image to temporary storage prior to issue creation."""
-    sess_id = session_id or f"{current_user.uuid}_{uuid.uuid4().hex[:8]}"
+    user_prefix = str(current_user.uuid) if current_user else "guest"
+    sess_id = session_id or f"{user_prefix}_{uuid.uuid4().hex[:8]}"
     result = await upload_temp_image(file, session_id=sess_id)
 
     return {

@@ -53,7 +53,7 @@ from backend.utils.issue_helpers import (
     find_nearby_issues,
 )
 from backend.ml.categorizer import categorize_text
-from backend.utils.auth import get_current_user, require_role
+from backend.utils.auth import get_current_user, require_role, get_optional_user
 
 logger = logging.getLogger(__name__)
 
@@ -209,10 +209,11 @@ def auto_categorize_issue(payload: dict):
 @router.post("/upload", response_model=dict)
 async def upload_issue_image_endpoint(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_optional_user)
 ):
     """Upload an image photo for an issue report (temp upload)."""
-    res = await upload_temp_image(file, session_id=str(current_user.uuid))
+    sess_id = str(current_user.uuid) if current_user else f"guest_{uuid_pkg.uuid4().hex[:8]}"
+    res = await upload_temp_image(file, session_id=sess_id)
     return {
         "url": res["url"],
         "image_url": res["url"],
