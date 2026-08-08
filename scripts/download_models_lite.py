@@ -81,22 +81,9 @@ def setup_priority_model() -> bool:
 
 
 def setup_chroma_db() -> bool:
-    """Initialize ChromaDB vector storage directory."""
-    chroma_dir = CACHE_DIR / "chroma_db"
-    chroma_dir.mkdir(parents=True, exist_ok=True)
-
-    try:
-        import chromadb
-        client = chromadb.PersistentClient(path=str(chroma_dir))
-        collection = client.get_or_create_collection(
-            name="community_issues",
-            metadata={"hnsw:space": "cosine"}
-        )
-        logger.info(f"✅ ChromaDB initialized. Collection count: {collection.count()}")
-        return True
-    except Exception as e:
-        logger.error(f"ChromaDB setup failed: {e}")
-        return False
+    """Skip ChromaDB vector storage on 512MB RAM free tier."""
+    logger.info("⚡ Skipping ChromaDB vector storage to fit within 512MB RAM free tier limit.")
+    return True
 
 
 def main():
